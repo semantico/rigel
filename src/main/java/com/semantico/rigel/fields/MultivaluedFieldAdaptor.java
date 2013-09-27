@@ -1,12 +1,10 @@
-package com.semantico.sipp2.solr.fields;
+package com.semantico.rigel.fields;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ClassToInstanceMap;
-import com.semantico.sipp2.solr.FieldDataSource;
+import com.semantico.rigel.FieldDataSource;
 
 import java.util.Collection;
-
-import javax.annotation.Nullable;
 
 public class MultivaluedFieldAdaptor<R> implements MultivaluedField<R> {
 
@@ -22,7 +20,6 @@ public class MultivaluedFieldAdaptor<R> implements MultivaluedField<R> {
     }
 
     @Override
-    @Nullable
     public Collection<R> getValue(ClassToInstanceMap<FieldDataSource<?>> context) {
         return delegate.getValues(context);
     }

@@ -25,7 +25,7 @@
  * - Changed package
  */
 
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 import org.apache.solr.common.params.CommonParams; //jdoc
 

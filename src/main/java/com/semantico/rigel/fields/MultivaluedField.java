@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr.fields;
+package com.semantico.rigel.fields;
 
 import java.util.Collection;
 

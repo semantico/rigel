@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -9,9 +9,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.common.collect.Sets;
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.fields.Sipp2;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.Filter;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class ContentItemFactory {
         if(schema.getFilters().isEmpty()) {
             throw new RuntimeException("content item schemas must define some filters");
         }
-        Map<DataKey<?,?>,?> fakeMap = ImmutableMap.of();
+        Map<DataKey<?>,? super Object> fakeMap = ImmutableMap.of();
         if (schema.create(fakeMap) == null) {
             throw new RuntimeException("content item schemas registered to the content item factory must create concrete objects");
         }
@@ -79,7 +78,6 @@ public class ContentItemFactory {
         return builder.build();
     }
 
-
     /*
      * Unknown types
      */
@@ -106,7 +104,7 @@ public class ContentItemFactory {
     }
 
     private <T extends ContentItem> T buildItem(ContentItem.Schema<T> schema, ClassToInstanceMap<FieldDataSource<?>> context, FieldSet... additionalFields) {
-        Map<DataKey<?,?>, ? super Object> dataMap = Maps.newHashMap();
+        Map<DataKey<?>, ? super Object> dataMap = Maps.newHashMap();
 
         for(FieldKey<?, ?> key : schema.getFields()) {
             key.storeValue(dataMap, context);
@@ -128,13 +126,13 @@ public class ContentItemFactory {
                 if(match == null) {
                     match = entry.getValue();
                 } else {
-                    throw new RuntimeException("multiple matching schemas found for document id:" + document.getFirstValue(Sipp2.ID.getFieldName()));
+                    throw new RuntimeException("multiple matching schemas found for document");
                 }
             }
         }
 
         if(match == null) {
-            throw new RuntimeException("could not determine type of solr document id:" + document.getFirstValue(Sipp2.ID.getFieldName()));
+            throw new RuntimeException("could not determine type of solr document");
         }
         return match;
     }

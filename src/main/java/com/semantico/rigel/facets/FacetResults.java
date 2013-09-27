@@ -1,9 +1,9 @@
-package com.semantico.sipp2.solr.facets;
+package com.semantico.rigel.facets;
 
 import java.util.List;
 
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.Filter;
 
 public abstract class FacetResults<R, F> {
 

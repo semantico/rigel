@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr.facets;
+package com.semantico.rigel.facets;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.apache.solr.client.solrj.response.FacetField;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.Filter;
 
 public class FieldFacetResults<R, F> extends FacetResults<R, F> {
 

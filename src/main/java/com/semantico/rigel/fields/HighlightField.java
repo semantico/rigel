@@ -1,14 +1,13 @@
-package com.semantico.sipp2.solr.fields;
+package com.semantico.rigel.fields;
 
 import com.google.common.collect.ClassToInstanceMap;
-import com.semantico.sipp2.solr.FieldDataSource;
-import com.semantico.sipp2.solr.QueryResponseDataSource;
+import com.semantico.rigel.ContentItem;
+import com.semantico.rigel.FieldDataSource;
+import com.semantico.rigel.QueryResponseDataSource;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 
@@ -24,7 +23,6 @@ public class HighlightField extends SimpleField<String> {
     }
 
     @Override
-    @Nullable
     public String getValue(ClassToInstanceMap<FieldDataSource<?>> context) {
         List<String> highlights = getHighlights(context);
         if (highlights == null || highlights.size() == 0) {
@@ -35,7 +33,7 @@ public class HighlightField extends SimpleField<String> {
 
     private List<String> getHighlights(ClassToInstanceMap<FieldDataSource<?>> context) {
         QueryResponse response = context.getInstance(QueryResponseDataSource.class).get();
-        String docId = Sipp2.ID.getValue(context);
+        String docId = ContentItem.ID.getValue(context);
         if (docId == null) {
             return null;
         }

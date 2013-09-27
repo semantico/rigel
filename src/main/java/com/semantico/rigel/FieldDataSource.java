@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 
 public interface FieldDataSource<S> {

@@ -1,15 +1,10 @@
-package com.semantico.sipp2.solr.fields;
+package com.semantico.rigel.fields;
 
 import java.util.Collection;
 
-import javax.annotation.Nullable;
-
-import org.springframework.context.ApplicationContext;
-
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.semantico.sipp2.frontend.SpringContextHolder;
-import com.semantico.sipp2.solr.AsyncContentRepository;
+import com.semantico.rigel.AsyncContentRepository;
 
 public final class ForeignKeyField {
 
@@ -18,20 +13,8 @@ public final class ForeignKeyField {
 
             private AsyncContentRepository repo;
 
-            @Nullable
-            public ListenableFuture<O> apply(@Nullable String input) {
-                if (repo == null) {
-                    initRepo();
-                }
+            public ListenableFuture<O> apply(String input) {
                 return repo.submit(input, expectedClass);
-            }
-
-            private void initRepo() {
-                ApplicationContext context = SpringContextHolder.getApplicationContext();
-                if(context == null) {
-                    throw new RuntimeException("Application context not initialized");
-                }
-                repo = context.getBean(AsyncContentRepository.class);
             }
         };
     }

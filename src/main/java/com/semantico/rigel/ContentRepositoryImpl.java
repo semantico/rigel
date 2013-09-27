@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 import java.util.List;
 
@@ -9,18 +9,15 @@ import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.semantico.sipp2.exceptions.InternalServerException;
-import com.semantico.sipp2.solr.ContentRepository.JoinQueryBuilder.PartOne;
-import com.semantico.sipp2.solr.ContentRepository.JoinQueryBuilder.PartTwo;
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.fields.Sipp2;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.ContentRepository.JoinQueryBuilder.PartOne;
+import com.semantico.rigel.ContentRepository.JoinQueryBuilder.PartTwo;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.Filter;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
@@ -58,7 +55,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
     @Override
     public IdQueryBuilder<T> id(String id) {
-        checkArgument(StringUtils.isNotBlank(id));
+        checkArgument(id != null && !id.isEmpty());
         return new IdQueryBuilderImpl(id);
     }
 
@@ -70,7 +67,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         public IdQueryBuilderImpl(String id) {
             this.forceType = false;
             this.q = new SolrQuery();
-            q.addFilterQuery(Filter.on(Sipp2.ID, id).toSolrFormat());
+            q.addFilterQuery(Filter.on(ContentItem.ID, id).toSolrFormat());
             q.setRows(1);
             q.setRequestHandler("fetch");
         }
@@ -98,7 +95,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
     public IdsQueryBuilder<T> ids(String... ids) {
         checkArgument(ids != null);
         for (String id : ids) {
-            checkArgument(StringUtils.isNotBlank(id));
+            checkArgument(id != null && !id.isEmpty());
         }
         return new IdsQueryBuilderImpl(ids);
     }
@@ -133,7 +130,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             SolrQuery q = new SolrQuery();
             Set<Filter> filters = Sets.newHashSet();
             for (String id : ids) {
-                filters.add(Filter.on(Sipp2.ID, id));
+                filters.add(Filter.on(ContentItem.ID, id));
             }
             q.addFilterQuery(Filter.or(filters).toSolrFormat());
             q.setRows(Integer.MAX_VALUE);
@@ -443,7 +440,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         try {
             return solr.query(q, method);
         } catch (SolrServerException ex) {
-            throw new InternalServerException(ex);
+            throw new RuntimeException(ex);
         }
     }
 

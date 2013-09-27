@@ -1,14 +1,13 @@
-package com.semantico.sipp2.solr.fields;
+package com.semantico.rigel.fields;
 
 import org.apache.solr.common.SolrDocument;
 
-import com.semantico.sipp2.solr.SolrDocDataSource;
+import com.semantico.rigel.SolrDocDataSource;
 
 import com.google.common.collect.ClassToInstanceMap;
-import javax.annotation.Nullable;
 
-import com.semantico.sipp2.solr.FieldDataSource;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.FieldDataSource;
+import com.semantico.rigel.filters.Filter;
 
 import java.util.Collection;
 
@@ -25,7 +24,6 @@ public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdapta
     }
 
     @Override
-    @Nullable
     public T getValue(ClassToInstanceMap<FieldDataSource<?>> context) {
         SolrDocument doc = context.getInstance(SolrDocDataSource.class).get();
         return (T) doc.getFieldValue(fieldName);

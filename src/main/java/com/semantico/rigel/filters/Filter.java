@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr.filters;
+package com.semantico.rigel.filters;
 
 import org.apache.solr.client.solrj.util.ClientUtils;
 
@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 
 import org.apache.solr.common.SolrDocument;
 
@@ -21,9 +20,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
-import com.semantico.sipp2.solr.FieldDataSource;
-import com.semantico.sipp2.solr.SolrDocDataSource;
-import com.semantico.sipp2.solr.fields.Field;
+import com.semantico.rigel.FieldDataSource;
+import com.semantico.rigel.SolrDocDataSource;
+import com.semantico.rigel.fields.Field;
 /**
  * A Filter represents a filter over a solr field, it is also a predicate over solr documents.
  * Filters have the contract that the predicate must be true for solr documents returned from the query it produces.
@@ -38,7 +37,7 @@ public abstract class Filter implements Predicate<SolrDocument> {
     public static <T> Filter on(final Field<T> field, final T value) {
         return new Filter() {
 
-            public boolean apply(@Nullable SolrDocument input) {
+            public boolean apply(SolrDocument input) {
                 T actual = getFieldValue(field, input);
                 return value.equals(actual);
             }
@@ -61,7 +60,7 @@ public abstract class Filter implements Predicate<SolrDocument> {
 
         return new Filter() {
 
-            public boolean apply(@Nullable SolrDocument input) {
+            public boolean apply(SolrDocument input) {
                 T actual = getFieldValue(field, input);
                 return actual != null && range.contains(actual);
             }
@@ -119,7 +118,7 @@ public abstract class Filter implements Predicate<SolrDocument> {
 
             private final Predicate<SolrDocument> predicate = connective.join(filters);
 
-            public boolean apply(@Nullable SolrDocument input) {
+            public boolean apply(SolrDocument input) {
                 return predicate.apply(input);
             }
 
@@ -127,7 +126,7 @@ public abstract class Filter implements Predicate<SolrDocument> {
                 Joiner joiner = Joiner.on(String.format(" %s ", connective.name()));
 
                 Function<Filter,String> toSolrFormat = new Function<Filter,String>() {
-                    public String apply(@Nullable Filter input) {
+                    public String apply(Filter input) {
                         return input.toSolrFormat();
                     }
                 };

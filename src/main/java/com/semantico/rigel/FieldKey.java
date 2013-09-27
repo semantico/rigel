@@ -1,7 +1,7 @@
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 import com.google.common.base.Function;
-import com.semantico.sipp2.solr.fields.Field;
+import com.semantico.rigel.fields.Field;
 
 
 public interface FieldKey<R, F> extends DataKey<F> {
@@ -11,6 +11,4 @@ public interface FieldKey<R, F> extends DataKey<F> {
     String getMeta(String key);
 
     F formatRawValue(R rawValue);
-
-    Function<R,F> getTransformFunc();
 }

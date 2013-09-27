@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr.facets;
+package com.semantico.rigel.facets;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -10,10 +10,9 @@ import org.apache.solr.common.util.DateUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
-import com.semantico.sipp2.solr.DateMathParser;
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.DateMathParser;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.Filter;
 
 /*
  * R = The raw type of the field, its comparable e.g. Long, Integer
@@ -28,12 +27,10 @@ public abstract class RangeFacetResults<R extends Comparable<R>, F, B, G>
 
     private final List<Count<Range<R>, F>> values;
 
-    public RangeFacetResults(RangeFacet<B, G> rangeFacet,
-            Function<Range<R>, F> transformFunc, Field<?> field) {
+    public RangeFacetResults(RangeFacet<B, G> rangeFacet, Function<Range<R>, F> transformFunc, Field<?> field) {
         super(field);
 
-        ImmutableList.Builder<Count<Range<R>, F>> builder = ImmutableList
-                .builder();
+        ImmutableList.Builder<Count<Range<R>, F>> builder = ImmutableList.builder();
         G gap = rangeFacet.getGap();
         B rangeEnd = rangeFacet.getEnd();
 
@@ -42,11 +39,10 @@ public abstract class RangeFacetResults<R extends Comparable<R>, F, B, G>
             R end = getRangeEnd(start, gap, rangeEnd);
             //Default range inclusion is "lower"
             //lower bound inclusive, upper bound exclusive
-            Range<R> range = Ranges.closedOpen(start, end);
+            Range<R> range = Range.closedOpen(start, end);
             F formattedValue = transformFunc.apply(range);
 
-            builder.add(new RangeCount<R, F>(range, formattedValue, Long
-                    .valueOf(count.getCount())));
+            builder.add(new RangeCount<R, F>(field, range, formattedValue, Long.valueOf(count.getCount())));
         }
         values = builder.build();
     }
@@ -68,10 +64,8 @@ public abstract class RangeFacetResults<R extends Comparable<R>, F, B, G>
         }
 
         @Override
-        protected Integer getRangeEnd(Integer countStart, Number gap,
-                Number rangeEnd) {
-            Integer end = Integer.valueOf(gap.intValue()
-                    + countStart.intValue());
+        protected Integer getRangeEnd(Integer countStart, Number gap, Number rangeEnd) {
+            Integer end = Integer.valueOf(gap.intValue() + countStart.intValue());
             if (end.compareTo(rangeEnd.intValue()) < 0) {
                 return end;
             } else {
@@ -142,8 +136,8 @@ public abstract class RangeFacetResults<R extends Comparable<R>, F, B, G>
 
     private static class RangeCount<R extends Comparable<R>, F> extends FacetResults.Count<Range<R>, F> {
 
-        public RangeCount(Range<R> rawValue, F formattedValue, long count) {
-            super(rawValue, formattedValue, count);
+        public RangeCount(Field<?> field, Range<R> rawValue, F formattedValue, long count) {
+            super(field, rawValue, formattedValue, count);
         }
 
         @Override

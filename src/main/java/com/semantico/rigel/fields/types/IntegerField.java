@@ -1,6 +1,6 @@
-package com.semantico.sipp2.solr.fields.types;
+package com.semantico.rigel.fields.types;
 
-import com.semantico.sipp2.solr.fields.SimpleField;
+import com.semantico.rigel.fields.SimpleField;
 
 public class IntegerField extends SimpleField<Integer> {
 

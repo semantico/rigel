@@ -1,6 +1,6 @@
-package com.semantico.sipp2.solr.fields;
+package com.semantico.rigel.fields;
 
-import com.semantico.sipp2.solr.fields.types.*;
+import com.semantico.rigel.fields.types.*;
 
 /**
  * Properties of the Dublin Core elements namespace represented as solr Field abstractions

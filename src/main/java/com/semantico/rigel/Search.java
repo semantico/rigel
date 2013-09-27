@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
@@ -7,18 +7,16 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
-import com.semantico.sipp2.solr.facets.FacetResults;
-import com.semantico.sipp2.solr.facets.FieldFacetResults;
-import com.semantico.sipp2.solr.facets.RangeFacetResults;
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.fields.types.*;
+import com.semantico.rigel.facets.FacetResults;
+import com.semantico.rigel.facets.FieldFacetResults;
+import com.semantico.rigel.facets.RangeFacetResults;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.fields.types.*;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -51,8 +49,7 @@ public abstract class Search extends FieldSet {
     protected FieldFacetKeyBuilder<Date, Date> facet(DateField field) {
         Function<String, Date> unmarshallFunc = new Function<String, Date>() {
             @Override
-            @Nullable
-            public Date apply(@Nullable String input) {
+            public Date apply(String input) {
                 try {
                     return DateUtil.parseDate(input);
                 } catch (ParseException e) {
@@ -66,8 +63,7 @@ public abstract class Search extends FieldSet {
     protected FieldFacetKeyBuilder<Integer, Integer> facet(IntegerField field) {
         Function<String, Integer> unmarshallFunc = new Function<String, Integer>() {
             @Override
-            @Nullable
-            public Integer apply(@Nullable String input) {
+            public Integer apply(String input) {
                 return Integer.valueOf(input);
             }
         };
@@ -77,8 +73,7 @@ public abstract class Search extends FieldSet {
     protected FieldFacetKeyBuilder<Long, Long> facet(LongField field) {
         Function<String, Long> unmarshallFunc = new Function<String, Long>() {
             @Override
-            @Nullable
-            public Long apply(@Nullable String input) {
+            public Long apply(String input) {
                 return Long.valueOf(input);
             }
         };
@@ -112,11 +107,6 @@ public abstract class Search extends FieldSet {
             };
             facets.add(key);
             return key;
-        }
-
-        public <T> FieldFacetKeyBuilder<R, T> transformLike(FieldKey<F, T> fieldKey) {
-            return new FieldFacetKeyBuilder<R, T>(field, unmarshallFunc, Functions.compose(fieldKey.getTransformFunc(),
-                            transformFunc));
         }
 
         public <T> FieldFacetKeyBuilder<R, T> transform(Function<F, T> func) {

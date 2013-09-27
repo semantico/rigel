@@ -1,8 +1,8 @@
-package com.semantico.sipp2.solr.fields.types;
+package com.semantico.rigel.fields.types;
 
 import java.util.Date;
 
-import com.semantico.sipp2.solr.fields.SimpleField;
+import com.semantico.rigel.fields.SimpleField;
 
 public class DateField extends SimpleField<Date> {
 

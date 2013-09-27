@@ -1,4 +1,4 @@
-package com.semantico.sipp2.solr;
+package com.semantico.rigel;
 
 import com.google.common.collect.Lists;
 
@@ -10,10 +10,10 @@ import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.semantico.sipp2.solr.fields.Field;
-import com.semantico.sipp2.solr.fields.MultivaluedField;
-import com.semantico.sipp2.solr.fields.SimpleField;
-import com.semantico.sipp2.solr.filters.Filter;
+import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.fields.MultivaluedField;
+import com.semantico.rigel.fields.SimpleField;
+import com.semantico.rigel.filters.Filter;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -107,7 +107,7 @@ public abstract class FieldSet {
         }
 
         @Override
-        public void storeValue(Map<DataKey<?, ?>, ? super Object> map, ClassToInstanceMap<FieldDataSource<?>> context) {
+        public void storeValue(Map<DataKey<?>, ? super Object> map, ClassToInstanceMap<FieldDataSource<?>> context) {
             R rawValue = field.getValue(context);
             if (eagerTransform) {
                 map.put(this, formatRawValue(rawValue));
@@ -117,17 +117,12 @@ public abstract class FieldSet {
         }
 
         @Override
-        public F retrieveValue(Map<DataKey<?, ?>, ? super Object> map) {
+        public F retrieveValue(Map<DataKey<?>, ? super Object> map) {
             if (eagerTransform) {
                 return (F) map.get(this);
             } else {
                 return formatRawValue(((R) map.get(this)));
             }
-        }
-
-        @Override
-        public Function<R,F> getTransformFunc() {
-            return transformFunction;
         }
     }
 
@@ -146,7 +141,7 @@ public abstract class FieldSet {
         }
 
         @Override
-        public void storeValue(Map<DataKey<?, ?>, ? super Object> map, ClassToInstanceMap<FieldDataSource<?>> context) {
+        public void storeValue(Map<DataKey<?>, ? super Object> map, ClassToInstanceMap<FieldDataSource<?>> context) {
             Collection<R> rawValue = field.getValue(context);
             if (eagerTransform) {
                 map.put(this, formatRawValue(rawValue));
@@ -156,16 +151,12 @@ public abstract class FieldSet {
         }
 
         @Override
-        public Collection<F> retrieveValue(Map<DataKey<?, ?>, ? super Object> map) {
+        public Collection<F> retrieveValue(Map<DataKey<?>, ? super Object> map) {
             if (eagerTransform) {
                 return (Collection<F>) map.get(this);
             } else {
                 return formatRawValue(((Collection<R>) map.get(this)));
             }
-        }
-
-        public Function<R,F> getTransformFunc() {
-            return transformFunction;
         }
     }
 
