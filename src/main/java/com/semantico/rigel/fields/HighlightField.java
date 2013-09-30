@@ -1,9 +1,10 @@
 package com.semantico.rigel.fields;
 
 import com.google.common.collect.ClassToInstanceMap;
-import com.semantico.rigel.ContentItem;
+import com.semantico.rigel.ContentItem.Schema;
 import com.semantico.rigel.FieldDataSource;
 import com.semantico.rigel.QueryResponseDataSource;
+import com.semantico.rigel.SchemaDataSource;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,6 +16,10 @@ public class HighlightField extends SimpleField<String> {
 
     public HighlightField(String fieldName) {
         super(fieldName);
+    }
+
+    public HighlightField(FieldNameSource nameSource) {
+        super(nameSource);
     }
 
     @Override
@@ -33,7 +38,9 @@ public class HighlightField extends SimpleField<String> {
 
     private List<String> getHighlights(ClassToInstanceMap<FieldDataSource<?>> context) {
         QueryResponse response = context.getInstance(QueryResponseDataSource.class).get();
-        String docId = ContentItem.ID.getValue(context);
+        Schema<?> schema = context.getInstance(SchemaDataSource.class).get();
+
+        String docId = schema.getIdField().getValue(context);
         if (docId == null) {
             return null;
         }
@@ -45,6 +52,6 @@ public class HighlightField extends SimpleField<String> {
         if (hilightingForDoc == null) {
             return null;
         }
-        return hilightingForDoc.get(fieldName);
+        return hilightingForDoc.get(getFieldName());
     }
 }

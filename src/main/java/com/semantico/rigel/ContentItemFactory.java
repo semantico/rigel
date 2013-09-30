@@ -63,6 +63,7 @@ public class ContentItemFactory {
         Builder<T> builder = ImmutableList.builder();
         for(SolrDocument doc : response.getResults()) {
             context.put(SolrDocDataSource.class, new SolrDocDataSource(doc));
+            context.put(SchemaDataSource.class, new SchemaDataSource(forcedSchema));
             builder.add(buildItem(forcedSchema, context, additionalFields));
         }
         return builder.build();
@@ -73,6 +74,7 @@ public class ContentItemFactory {
         Builder<T> builder = ImmutableList.builder();
         for(SolrDocument doc : list) {
             context.put(SolrDocDataSource.class, new SolrDocDataSource(doc));
+            context.put(SchemaDataSource.class, new SchemaDataSource(forcedSchema));
             builder.add(buildItem(forcedSchema, context, additionalFields));
         }
         return builder.build();
@@ -87,8 +89,10 @@ public class ContentItemFactory {
 
         Builder<ContentItem> builder = ImmutableList.builder();
         for(SolrDocument doc : response.getResults()) {
+            ContentItem.Schema<?> schema = getSchemaForDocument(doc);
+            context.put(SchemaDataSource.class, new SchemaDataSource(schema));
             context.put(SolrDocDataSource.class, new SolrDocDataSource(doc));
-            builder.add(buildItem(getSchemaForDocument(doc), context, additionalFields));
+            builder.add(buildItem(schema, context, additionalFields));
         }
         return builder.build();
     }
@@ -97,8 +101,10 @@ public class ContentItemFactory {
         ClassToInstanceMap<FieldDataSource<?>> context = MutableClassToInstanceMap.create();
         Builder<ContentItem> builder = ImmutableList.builder();
         for(SolrDocument doc : list) {
+            ContentItem.Schema<?> schema = getSchemaForDocument(doc);
+            context.put(SchemaDataSource.class, new SchemaDataSource(schema));
             context.put(SolrDocDataSource.class, new SolrDocDataSource(doc));
-            builder.add(buildItem(getSchemaForDocument(doc), context, additionalFields));
+            builder.add(buildItem(schema, context, additionalFields));
         }
         return builder.build();
     }

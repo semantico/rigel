@@ -7,4 +7,8 @@ public class LongField extends SimpleField<Long> {
     public LongField(String fieldName) {
         super(fieldName);
     }
+
+    public LongField(FieldNameSource fieldNameSource) {
+        super(fieldNameSource);
+    }
 }

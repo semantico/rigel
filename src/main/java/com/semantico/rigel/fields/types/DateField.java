@@ -10,4 +10,7 @@ public class DateField extends SimpleField<Date> {
         super(fieldName);
     }
 
+    public DateField(FieldNameSource fieldNameSource) {
+        super(fieldNameSource);
+    }
 }

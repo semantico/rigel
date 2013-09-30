@@ -67,7 +67,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         public IdQueryBuilderImpl(String id) {
             this.forceType = false;
             this.q = new SolrQuery();
-            q.addFilterQuery(Filter.on(ContentItem.ID, id).toSolrFormat());
+            q.addFilterQuery(Filter.on(schema.getIdField(), id).toSolrFormat());
             q.setRows(1);
             q.setRequestHandler("fetch");
         }
@@ -130,7 +130,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             SolrQuery q = new SolrQuery();
             Set<Filter> filters = Sets.newHashSet();
             for (String id : ids) {
-                filters.add(Filter.on(ContentItem.ID, id));
+                filters.add(Filter.on(schema.getIdField(), id));
             }
             q.addFilterQuery(Filter.or(filters).toSolrFormat());
             q.setRows(Integer.MAX_VALUE);
