@@ -7,19 +7,22 @@ import static com.semantico.rigel.TestFields.*;
 
 public class TestContentItem extends ContentItem {
 
-    public static class TestSchema extends ContentItem.Schema<TestContentItem> {
+    public static class Schema extends ContentItem.Schema<TestContentItem> {
 
         public FieldKey<?, String> title;
+        public FieldKey<?, String> type;
         public FieldKey<?, Date> date;
         public FieldKey<?, Integer> sceneCount;
         public FieldKey<?, Long> bigNum;
 
-        public TestSchema() {
+        public Schema() {
+            type = field(TYPE).build();
             title = field(TITLE).build();
             date = field(DATE).build();
             sceneCount = field(SCENE_COUNT).build();
             bigNum = field(REALLY_BIG_NUMBER).build();
 
+            filter(TYPE.isEqualTo("test"));
         }
 
         @Override
@@ -28,9 +31,9 @@ public class TestContentItem extends ContentItem {
         }
     }
 
-    private final TestSchema schema;
+    private final Schema schema;
 
-    public TestContentItem(TestSchema schema, Map<DataKey<?>, ? super Object> data) {
+    public TestContentItem(Schema schema, Map<DataKey<?>, ? super Object> data) {
         super(schema, data);
         this.schema = schema;
     }

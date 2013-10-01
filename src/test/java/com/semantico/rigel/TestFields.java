@@ -4,6 +4,7 @@ import com.semantico.rigel.fields.types.*;
 
 public interface TestFields {
 
+    public static final StringField TYPE = new StringField("type");
     public static final StringField TITLE = new StringField("title");
     public static final DateField DATE = new DateField("date");
     public static final IntegerField SCENE_COUNT = new IntegerField("scene_count");
