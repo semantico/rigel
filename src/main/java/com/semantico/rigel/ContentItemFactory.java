@@ -12,6 +12,7 @@ import com.google.common.collect.Sets;
 import com.semantico.rigel.fields.Field;
 import com.semantico.rigel.filters.Filter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +31,7 @@ public class ContentItemFactory {
     private final Map<Predicate<SolrDocument>, ContentItem.Schema<?>> schemas;
     private final Set<Field<?>> typeFields;
 
-    public ContentItemFactory(List<ContentItem.Schema<?>> schemaList) {
+    public ContentItemFactory(Collection<ContentItem.Schema<?>> schemaList) {
         this.schemas = Maps.newHashMap();
         this.typeFields = Sets.newHashSet();
         for(ContentItem.Schema<?> schema : schemaList) {
