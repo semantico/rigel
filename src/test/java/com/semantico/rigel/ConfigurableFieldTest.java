@@ -2,7 +2,7 @@ package com.semantico.rigel;
 
 import org.testng.annotations.Test;
 
-import com.semantico.rigel.TestContentItem.Schema;
+import com.semantico.rigel.test.items.TestContentItem.Schema;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 

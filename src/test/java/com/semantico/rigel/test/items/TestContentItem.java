@@ -1,7 +1,12 @@
-package com.semantico.rigel;
+package com.semantico.rigel.test.items;
 
 import java.util.Date;
 import java.util.Map;
+
+import com.semantico.rigel.ContentItem;
+import com.semantico.rigel.DataKey;
+import com.semantico.rigel.FieldKey;
+import com.semantico.rigel.ContentItem.Schema;
 
 import static com.semantico.rigel.TestFields.*;
 
