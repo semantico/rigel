@@ -1,10 +1,13 @@
 package com.semantico.rigel;
 
+import static com.semantico.rigel.TestFields.CHILD_IDS;
 import static com.semantico.rigel.TestFields.SCENE_COUNT;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.semantico.rigel.test.items.Author;
@@ -63,6 +68,13 @@ public class ContentRepositoryTest extends IntergrationTestBase {
                 "A lonely book",
                 new Date(),
                 5));
+
+        docs.add(createPlayCollection("collection1",
+                "play1",
+                "play2"));
+
+        docs.add(createPlayCollection("collection2",
+                "play4"));
 
         addAndCommit(docs);
     }
@@ -112,21 +124,59 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         assertEquals(2, group.size());
     }
 
+    /*
+     * Force type means we dont dynamically decide which schema to use
+     * when creating the item. it is forced to use the schema provided.
+     *
+     * This gives you full control over which wrapper object is used on a
+     * solr document but also makes it more possible for programming errors because
+     * you may try to access data that dosent exist on that document
+     */
+
     @Test
-    public void testIdForceType() {
+    public void testForceType() {
         ContentRepository<Book> books = rigel.getContentRepository(bookSchema);
-        /*
-         * Force type means we dont dynamically decide which schema to use
-         * when creating the item. it is forced to use the schema provided.
-         *
-         * This gives you full control over which wrapper object is used on a
-         * solr document
-         */
+
         Optional<Book> op = books.id("play1").forceType().get();
         assertTrue(op.isPresent());
 
         Book book = op.get();
         assertEquals("The Play that got away", book.getTitle());
+    }
 
+    @Test(expected = NullPointerException.class)
+    public void testForceTypeMissingData() {
+        ContentRepository<Book> books = rigel.getContentRepository(bookSchema);
+
+        Optional<Book> op = books.id("play1").forceType().get();
+        assertTrue(op.isPresent());
+
+        Book book = op.get();
+
+        //This should throw an exception because plays dont have a chapter count
+        book.getChapterCount();
+    }
+
+    @Test
+    public void testJoinQuery() {
+        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
+
+        //Get all plays that are in a collection
+        List<Play> results = plays.joinFrom(CHILD_IDS).to(playSchema.getIdField()).get();
+
+        Collection<String> ids = Collections2.transform(results, ContentItem.getAsFunction(playSchema.id));
+        assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2", "play4")));
+        assertTrue(!ids.contains("play3"));
+    }
+
+    @Test
+    public void testJoinQuery2() {
+        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
+
+        //Get all plays that are in a collection
+        List<Play> results = plays.joinFrom(CHILD_IDS).filterBy(collectionSchema.getIdField().isEqualTo("collection1")).to(playSchema.getIdField()).get();
+
+        Collection<String> ids = Collections2.transform(results, ContentItem.getAsFunction(playSchema.id));
+        assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2")));
     }
 }

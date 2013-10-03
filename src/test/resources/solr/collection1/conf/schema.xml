@@ -835,6 +835,7 @@
     <field name="scene_count" type="int" indexed="true" stored="true" multiValued="false" />
     <field name="chapter_count" type="int" indexed="true" stored="true" multiValued="false" />
     <field name="id" type="string" indexed="true" stored="true" multiValued="false" />
+    <field name="child_ids" type="string" indexed="true" stored="true" multiValued="true" />
 
  </fields>
 

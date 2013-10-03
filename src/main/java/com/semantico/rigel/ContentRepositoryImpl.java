@@ -311,9 +311,9 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             forceType = false;
             q = new SolrQuery();
             q.setQuery(String.format("{!join from=%s to=%s}%s",
-                        partOne.fromField,
-                        partOne.toField,
-                        partOne.sourceFilter == null ? "" : partOne.sourceFilter.toSolrFormat()));
+                        partOne.fromField.getFieldName(),
+                        partOne.toField.getFieldName(),
+                        partOne.sourceFilter == null ? "*:*" : partOne.sourceFilter.toSolrFormat()));
             q.addFilterQuery(Filter.and(schema.getFilters()).toSolrFormat());
         }
 
@@ -414,11 +414,11 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
     }
 
-    @Override
-    public <R> FieldQueryBuilder<R> distinctValues(Field<R> facetField) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    //@Override
+    //public <R> FieldQueryBuilder<R> distinctValues(Field<R> facetField) {
+        //// TODO IMPLEMENT ME
+        //return null;
+    //}
 
     private ImmutableList<T> getContentItemsForQueryForced(SolrQuery q) {
         QueryResponse response = querySolr(q);

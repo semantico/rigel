@@ -11,5 +11,6 @@ public interface TestFields {
     public static final IntegerField SCENE_COUNT = new IntegerField("scene_count");
     public static final IntegerField CHAPTER_COUNT = new IntegerField("chapter_count");
     public static final LongField REALLY_BIG_NUMBER = new LongField("big_num");
+    public static final StringField CHILD_IDS = new StringField("child_ids");
 
 }

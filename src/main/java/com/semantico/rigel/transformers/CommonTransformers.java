@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 
 public final class CommonTransformers {
 
@@ -28,6 +29,15 @@ public final class CommonTransformers {
 
             public O apply(I input) {
                 return map.get(input);
+            }
+        };
+    }
+
+    public static final <I> Function<I,Optional<I>> optional() {
+        return new Function<I, Optional<I>>() {
+
+            public Optional<I> apply(I input) {
+                return Optional.<I>of(input);
             }
         };
     }

@@ -14,6 +14,7 @@ import org.apache.solr.core.CoreContainer;
 
 import com.semantico.rigel.test.items.Book;
 import com.semantico.rigel.test.items.Play;
+import com.semantico.rigel.test.items.PlayCollection;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -23,6 +24,7 @@ public abstract class IntergrationTestBase {
 
     protected static RigelContext rigel;
     protected static Play.Schema playSchema;
+    protected static PlayCollection.Schema collectionSchema;
     protected static Book.Schema bookSchema;
 
     public static String getSolrHome() {
@@ -45,11 +47,12 @@ public abstract class IntergrationTestBase {
 
         playSchema = new Play.Schema();
         bookSchema = new Book.Schema();
+        collectionSchema = new PlayCollection.Schema();
 
         Config config = ConfigFactory.load(propertiesFile);
         rigel = RigelContext.builder()
             .withConfig(config)
-            .registerSchemas(playSchema, bookSchema)
+            .registerSchemas(playSchema, bookSchema, collectionSchema)
             .customSolrServer(server)
             .build();
     }
@@ -73,6 +76,16 @@ public abstract class IntergrationTestBase {
         doc.addField(bookSchema.title.getField().getFieldName(), title);
         doc.addField(bookSchema.date.getField().getFieldName(), date);
         doc.addField(bookSchema.chapterCount.getField().getFieldName(), chapterCount);
+        return doc;
+    }
+
+    protected static SolrInputDocument createPlayCollection(String collectionId, String... playIds) {
+        SolrInputDocument doc = new SolrInputDocument();
+        doc.addField(collectionSchema.getIdField().getFieldName(), collectionId);
+        doc.addField(collectionSchema.type.getField().getFieldName(), "play-collection");
+        for (String playId : playIds) {
+            doc.addField(collectionSchema.playIds.getField().getFieldName(), playId);
+        }
         return doc;
     }
 

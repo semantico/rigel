@@ -28,7 +28,7 @@ public interface ContentRepository<T extends ContentItem> {
     AllQueryBuilder<T> all();
     JoinQueryBuilder.PartOne<T> joinFrom(Field<?> field);
     GroupQueryBuilder<T> groupBy(Field<?> groupField);
-    <R> FieldQueryBuilder<R> distinctValues(Field<R> facetField);
+    //<R> FieldQueryBuilder<R> distinctValues(Field<R> facetField);
 
     public interface QueryHook {
         void perform(SolrQuery solrQuery);
