@@ -1,14 +1,17 @@
 package com.semantico.rigel;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-import com.semantico.rigel.test.items.TestContentItem.Schema;
+import com.semantico.rigel.test.items.Play.Schema;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
-@Test
+
+@RunWith(JUnit4.class)
 public class ConfigurableFieldTest {
 
     @Test
@@ -18,17 +21,23 @@ public class ConfigurableFieldTest {
 
         Config config1 = ConfigFactory.load("test-config.properties");
         Schema schema1 = new Schema();
-        new RigelContext(config1, schema1);
+        RigelContext.builder()
+            .withConfig(config1)
+            .registerSchemas(schema1)
+            .build();
 
         Config config2 = ConfigFactory.load("test-config2.properties");
         Schema schema2 = new Schema();
-        new RigelContext(config2, schema2);
+        RigelContext.builder()
+            .withConfig(config2)
+            .registerSchemas(schema2)
+            .build();
 
         assertTrue(schema1.id.getField().getFieldName().equals("id"));
         assertTrue(schema2.id.getField().getFieldName().equals("s2_id"));
     }
 
-    @Test(expectedExceptions = RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testRejectMultipleContexts() {
         //Test that the same instance of a schema cant be registered
         //in two different contexts
@@ -36,10 +45,16 @@ public class ConfigurableFieldTest {
         Schema schema = new Schema();
 
         Config config1 = ConfigFactory.load("test-config.properties");
-        new RigelContext(config1, schema);
+        RigelContext.builder()
+            .withConfig(config1)
+            .registerSchemas(schema)
+            .build();
 
         Config config2 = ConfigFactory.load("test-config2.properties");
-        new RigelContext(config2, schema);
+        RigelContext.builder()
+            .withConfig(config2)
+            .registerSchemas(schema)
+            .build();
     }
 
 }

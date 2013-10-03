@@ -1,21 +1,22 @@
 package com.semantico.rigel.test.items;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
 import com.semantico.rigel.ContentItem;
 import com.semantico.rigel.DataKey;
 import com.semantico.rigel.FieldKey;
-import com.semantico.rigel.ContentItem.Schema;
 
 import static com.semantico.rigel.TestFields.*;
 
-public class TestContentItem extends ContentItem {
+public class Play extends ContentItem {
 
-    public static class Schema extends ContentItem.Schema<TestContentItem> {
+    public static class Schema extends ContentItem.Schema<Play> {
 
         public FieldKey<?, String> title;
         public FieldKey<?, String> type;
+        public FieldKey<?, Collection<Author>> author;
         public FieldKey<?, Date> date;
         public FieldKey<?, Integer> sceneCount;
         public FieldKey<?, Long> bigNum;
@@ -23,28 +24,33 @@ public class TestContentItem extends ContentItem {
         public Schema() {
             type = field(TYPE).build();
             title = field(TITLE).build();
+            author = field(AUTHOR.multivalued()).transform(Author.parse()).build();
             date = field(DATE).build();
             sceneCount = field(SCENE_COUNT).build();
             bigNum = field(REALLY_BIG_NUMBER).build();
 
-            filter(TYPE.isEqualTo("test"));
+            filter(TYPE.isEqualTo("play"));
         }
 
         @Override
-        public TestContentItem create(Map<DataKey<?>, ? super Object> data) {
-            return new TestContentItem(this, data);
+        public Play create(Map<DataKey<?>, ? super Object> data) {
+            return new Play(this, data);
         }
     }
 
     private final Schema schema;
 
-    public TestContentItem(Schema schema, Map<DataKey<?>, ? super Object> data) {
+    public Play(Schema schema, Map<DataKey<?>, ? super Object> data) {
         super(schema, data);
         this.schema = schema;
     }
 
     public String getTitle() {
         return get(schema.title);
+    }
+
+    public Collection<Author> getAuthor() {
+        return get(schema.author);
     }
 
     public Date getDate() {

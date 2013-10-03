@@ -1,12 +1,14 @@
 package com.semantico.rigel;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-import com.semantico.rigel.test.items.TestContentItem.Schema;
+import com.semantico.rigel.test.items.Play.Schema;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-@Test
+@RunWith(JUnit4.class)
 public class SchemaTest {
 
     @Test
@@ -14,7 +16,7 @@ public class SchemaTest {
         Schema testSchema = new Schema();
 
         Config config = ConfigFactory.load("test-config.properties");
-        new RigelContext(config, testSchema);
+        RigelContext.builder().withConfig(config).registerSchemas(testSchema).build();
     }
 
 }

@@ -12,9 +12,10 @@
     <properties>
         <slf4j.version>1.6.4</slf4j.version>
         <guava.version>15.0</guava.version>
-        <solrj.version>4.3.0</solrj.version>
+        <solr.version>4.3.0</solr.version>
         <config.version>1.0.2</config.version>
-        <testng.version>6.5.2</testng.version>
+        <junit.version>4.11</junit.version>
+        <mockito.version>1.9.0</mockito.version>
     </properties>
 
     <dependencies>
@@ -22,7 +23,7 @@
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
-            <version>${solrj.version}</version>
+            <version>${solr.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>log4j</artifactId>
@@ -67,9 +68,15 @@
 
         <!-- Test Dependencies -->
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -78,6 +85,25 @@
             <version>1.0.13</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-test-framework</artifactId>
+            <version>${solr.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-analysis-extras</artifactId>
+            <version>${solr.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
     <build>

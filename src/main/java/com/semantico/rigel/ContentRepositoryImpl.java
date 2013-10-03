@@ -66,8 +66,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
         public IdQueryBuilderImpl(String id) {
             this.forceType = false;
-            this.q = new SolrQuery();
-            q.addFilterQuery(Filter.on(schema.getIdField(), id).toSolrFormat());
+            this.q = new SolrQuery(Filter.on(schema.getIdField(), id).toSolrFormat());
             q.setRows(1);
             q.setRequestHandler("fetch");
         }
@@ -163,7 +162,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
     }
 
     protected SolrQuery buildAllQuery() {
-        SolrQuery q = new SolrQuery();
+        SolrQuery q = new SolrQuery("*:*");
         q.addFilterQuery(Filter.and(schema.getFilters()).toSolrFormat());
         q.setRows(Integer.MAX_VALUE);
         q.setRequestHandler("fetch");
@@ -352,9 +351,10 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
         public GroupQueryBuilderImpl(Field<?> groupField) {
             this.forceType = false;
-            this.q = new SolrQuery();
+            this.q = new SolrQuery("*:*");
             q.set("group", true);
             q.set("group.field", groupField.getFieldName());
+            q.addFilterQuery(Filter.and(schema.getFilters()).toSolrFormat());
         }
 
         @Override

@@ -1,6 +1,6 @@
 package com.semantico.rigel;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -10,7 +10,6 @@ import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
@@ -23,24 +22,16 @@ public class RigelContext {
 
     private final ContentItemFactory contentItemFactory;
     private final ContentRepositoryFactory contentRepoFactory;
+    private final SolrServer server;
 
-    public RigelContext(ContentItem.Schema<?>... schemas) {
-        this(ImmutableList.copyOf(schemas));
-    }
 
-    public RigelContext(Collection<ContentItem.Schema<?>> schemas) {
-        this(ConfigFactory.load(), schemas);
-    }
+    private RigelContext(Set<ContentItem.Schema<?>> schemas, RigelConfig config, SolrServer server) {
+        this.config = config;
 
-    public RigelContext(Config applicationConfig, ContentItem.Schema<?>... schemas) {
-        this(applicationConfig, ImmutableList.copyOf(schemas));
-    }
-
-    public RigelContext(Config applicationConfig, Collection<ContentItem.Schema<?>> schemas) {
-        config = new RigelConfig(applicationConfig);
+        this.server = (server != null) ? server : new HttpSolrServer(config.solrUrl);
 
         contentItemFactory = new ContentItemFactory(schemas);
-        contentRepoFactory = new ContentRepositoryFactory(config.solrServer, config.solrRequestMethod, contentItemFactory);
+        contentRepoFactory = new ContentRepositoryFactory(this.server, config.solrRequestMethod, contentItemFactory);
 
         for (ContentItem.Schema<?> schema : schemas) {
             //Yeah, leaking a reference to an object that hasnt finished being constructed.
@@ -52,13 +43,50 @@ public class RigelContext {
         return contentRepoFactory.getRepository(schema);
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private Set<ContentItem.Schema<?>> schemas;
+        private SolrServer solrServer;
+        private Config config;
+
+        public Builder() {
+            this.schemas = Sets.newHashSet();
+        }
+
+        public RigelContext build() {
+            if (config == null) {
+                config = ConfigFactory.load();
+            }
+            return new RigelContext(schemas, new RigelConfig(config), solrServer);
+        }
+
+        public Builder registerSchemas(ContentItem.Schema<?>... schemas) {
+            this.schemas.addAll(Arrays.asList(schemas));
+            return this;
+        }
+
+        public Builder withConfig(Config config) {
+            this.config = config;
+            return this;
+        }
+
+        public Builder customSolrServer(SolrServer solrServer) {
+            this.solrServer = solrServer;
+            return this;
+        }
+    }
+
     /*
      * yeah i know its all public, im feeling lazy
      */
     public static class RigelConfig {
 
         public final METHOD solrRequestMethod;
-        public final SolrServer solrServer;
+        public final String solrUrl;
 
         public final Map<String, FieldConfig> fieldConfig;
 
@@ -81,12 +109,7 @@ public class RigelContext {
                 throw new RuntimeException("rigel.request.method must be either GET or POST");
             }
 
-            if (config.hasPath("solr.server")) {
-                this.solrServer = (SolrServer) config.getAnyRef("solr.server");
-            } else {
-                String url = config.getString("solr.url");
-                this.solrServer = new HttpSolrServer(url);
-            }
+            this.solrUrl = config.getString("solr.url");
         }
 
         private Set<String> getSubPaths(Config config) {
