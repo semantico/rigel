@@ -13,6 +13,7 @@ import com.semantico.rigel.fields.Field;
 import com.semantico.rigel.filters.Filter;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -122,7 +123,7 @@ public class ContentItemFactory {
                 key.storeValue(dataMap, context);
             }
         }
-        return schema.create(ImmutableMap.copyOf(dataMap));
+        return schema.create(Collections.unmodifiableMap(dataMap));//cant use immutable map. it dosent permit nulls
     }
 
     private ContentItem.Schema<?> getSchemaForDocument(SolrDocument document) {
