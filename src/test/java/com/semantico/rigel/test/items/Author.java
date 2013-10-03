@@ -29,4 +29,13 @@ public class Author {
     public String getFamilyName() {
         return familyName;
     }
+
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Author)) {
+            return false;
+        }
+        Author other = (Author) obj;
+        return other.givenName.equals(this.givenName)
+            && other.familyName.equals(this.familyName);
+    }
 }

@@ -1,20 +1,15 @@
 package com.semantico.rigel;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import static com.semantico.rigel.TestFields.SCENE_COUNT;
+
+import static org.junit.Assert.*;
+
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.core.CoreContainer;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,97 +17,116 @@ import org.junit.runners.JUnit4;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.semantico.rigel.test.items.Author;
 import com.semantico.rigel.test.items.Book;
 import com.semantico.rigel.test.items.Play;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-
-import static org.junit.Assert.*;
-import static com.semantico.rigel.TestFields.*;
 
 @RunWith(JUnit4.class)
-public class ContentRepositoryTest {
-
-    private static Config config;
-    private static RigelContext rigel;
-    private static SolrServer server;
-
-    private static Play.Schema playSchema;
-    private static Book.Schema bookSchema;
-
-    public static String getSolrHome() {
-        try {
-            File file = new File(Thread.currentThread().getContextClassLoader().getResource("solr/collection1/conf/solrconfig.xml").toURI());
-            return file.getParentFile().getParentFile().getParent();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+public class ContentRepositoryTest extends IntergrationTestBase {
 
     @BeforeClass
     public static void beforeClass() throws SolrServerException, IOException {
-        playSchema = new Play.Schema();
-        bookSchema = new Book.Schema();
+        initialize("test-config.properties");
 
-        System.setProperty("solr.solr.home", getSolrHome());
-        CoreContainer.Initializer initializer = new CoreContainer.Initializer();
-        CoreContainer coreContainer = initializer.initialize();
-        server = new EmbeddedSolrServer(coreContainer, "collection1");
+        List<SolrInputDocument> docs = Lists.newArrayList();
 
+        docs.add(createPlay("play1",
+                "The Play that got away",
+                "King, Edd",
+                new Date(),
+                5,
+                1234567L));
 
-        SolrInputDocument doc = new SolrInputDocument();
-        doc.addField("id", "play1");
-        doc.addField("type", "play");
-        doc.addField("dc_title", "The Play that got away");
-        doc.addField("dc_creator", "King, Edd");
-        doc.addField("dc_issued", new Date());
-        doc.addField("scene_count", 5);
-        doc.addField("big_num", 123456789123456L);
+        docs.add(createPlay("play2",
+                "The Other Play with 5 Scenes!",
+                "Mc Roar, Malcolm",
+                new Date(),
+                5,
+                1234567L));
 
-        server.add(doc);
-        server.commit();
+        docs.add(createPlay("play3",
+                "Yet Another Play",
+                "King, Edd",
+                new Date(),
+                2,
+                1234567L));
 
-        config = ConfigFactory.load("test-config.properties");
-        rigel = RigelContext.builder()
-            .withConfig(config)
-            .registerSchemas(playSchema, bookSchema)
-            .customSolrServer(server)
-            .build();
-    }
+        docs.add(createPlay("play4",
+                "superPlay!",
+                "Mc Roar, Malcolm",
+                new Date(),
+                6,
+                1234567L));
 
-    @AfterClass
-    public static void afterClass() {
+        docs.add(createBook("book1",
+                "A lonely book",
+                new Date(),
+                5));
 
+        addAndCommit(docs);
     }
 
     @Test
-    public void testAllQuery() {
+    public void testDefaultAllQuery() {
         ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
 
         List<Play> results = plays.all().get();
-        assertTrue(results.size() == 1);
+        assertEquals(results.size(), 4);
     }
 
     @Test
-    public void testIdQuery() {
+    public void testDefaultIdQuery() {
         ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
 
         Optional<Play> op = plays.id("play1").get();
-
+        assertTrue(op.isPresent());
+        //Make sure the data was retrieved as expected
         Play play = op.get();
-        Author theAuthor = play.getAuthor().iterator().next();
-        assertEquals("Edd", theAuthor.getGivenName());
+        assertEquals(new Author("King, Edd"), play.getAuthor());
+        assertEquals(new Integer(5), play.getSceneCount());
+        assertEquals(new Long(1234567L), play.getBigNum());
+        assertEquals("The Play that got away", play.getTitle());
     }
 
     @Test
-    public void testGroupQuery() {
+    public void testDefaultGroupQuery() {
         ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT).get();
 
+        //There are 3 distinct scene counts
+        assertEquals(3, groups.keySet().size());
+
+        //there are two items with 5 scenes, but the default only returns
+        //one document per group
+        assertEquals(1, groups.get("5").size());
+    }
+
+    @Test
+    public void testGroupQuery2() {
+        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
+
+        ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT).limitResultsPerGroup(100).get();
+
         List<Play> group = groups.get("5");
-        assertEquals(1, group.size());
+        assertEquals(2, group.size());
+    }
+
+    @Test
+    public void testIdForceType() {
+        ContentRepository<Book> books = rigel.getContentRepository(bookSchema);
+        /*
+         * Force type means we dont dynamically decide which schema to use
+         * when creating the item. it is forced to use the schema provided.
+         *
+         * This gives you full control over which wrapper object is used on a
+         * solr document
+         */
+        Optional<Book> op = books.id("play1").forceType().get();
+        assertTrue(op.isPresent());
+
+        Book book = op.get();
+        assertEquals("The Play that got away", book.getTitle());
 
     }
 }

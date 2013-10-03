@@ -16,7 +16,7 @@ public class Play extends ContentItem {
 
         public FieldKey<?, String> title;
         public FieldKey<?, String> type;
-        public FieldKey<?, Collection<Author>> author;
+        public FieldKey<?, Author> author;
         public FieldKey<?, Date> date;
         public FieldKey<?, Integer> sceneCount;
         public FieldKey<?, Long> bigNum;
@@ -24,7 +24,7 @@ public class Play extends ContentItem {
         public Schema() {
             type = field(TYPE).build();
             title = field(TITLE).build();
-            author = field(AUTHOR.multivalued()).transform(Author.parse()).build();
+            author = field(AUTHOR).transform(Author.parse()).build();
             date = field(DATE).build();
             sceneCount = field(SCENE_COUNT).build();
             bigNum = field(REALLY_BIG_NUMBER).build();
@@ -49,7 +49,7 @@ public class Play extends ContentItem {
         return get(schema.title);
     }
 
-    public Collection<Author> getAuthor() {
+    public Author getAuthor() {
         return get(schema.author);
     }
 
