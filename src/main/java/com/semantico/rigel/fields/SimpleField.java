@@ -44,7 +44,7 @@ public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdapta
     @Override
     public T getValue(ClassToInstanceMap<FieldDataSource<?>> context) {
         SolrDocument doc = context.getInstance(SolrDocDataSource.class).get();
-        return (T) doc.getFieldValue(getFieldName());
+        return (T) doc.getFirstValue(getFieldName());
     }
 
     @Override
