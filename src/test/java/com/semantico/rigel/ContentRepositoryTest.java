@@ -1,7 +1,6 @@
 package com.semantico.rigel;
 
-import static com.semantico.rigel.TestFields.CHILD_IDS;
-import static com.semantico.rigel.TestFields.SCENE_COUNT;
+import static com.semantico.rigel.TestFields.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -48,7 +47,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
                 "Mc Roar, Malcolm",
                 new Date(),
                 5,
-                1234567L));
+                1L));
 
         docs.add(createPlay("play3",
                 "Yet Another Play",
@@ -157,6 +156,10 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         book.getChapterCount();
     }
 
+    /*
+     * Join queries compress two searches into one
+     */
+
     @Test
     public void testJoinQuery() {
         ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
@@ -170,13 +173,32 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     }
 
     @Test
-    public void testJoinQuery2() {
+    public void testJoinQueryWithFilter() {
         ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
 
-        //Get all plays that are in a collection
-        List<Play> results = plays.joinFrom(CHILD_IDS).filterBy(collectionSchema.getIdField().isEqualTo("collection1")).to(playSchema.getIdField()).get();
+        //Get plays that are in a specific collection
+        List<Play> results = plays.joinFrom(CHILD_IDS)
+            .filterBy(collectionSchema.getIdField().isEqualTo("collection1"))
+            .to(playSchema.getIdField())
+            .get();
 
         Collection<String> ids = Collections2.transform(results, ContentItem.getAsFunction(playSchema.id));
         assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2")));
+    }
+
+    @Test
+    public void testJoinQueryWithFilter2() {
+        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
+
+        //Get plays that are in a specific collection
+        List<Play> results = plays.joinFrom(CHILD_IDS)
+            .filterBy(collectionSchema.getIdField().isEqualTo("collection1"))
+            .to(playSchema.getIdField())
+            .filterBy(REALLY_BIG_NUMBER.isEqualTo(1L))//This time filter out play1
+            .get();
+
+        Collection<String> ids = Collections2.transform(results, ContentItem.getAsFunction(playSchema.id));
+        assertTrue(ids.contains("play2"));
+        assertTrue(!ids.contains("play1"));
     }
 }
