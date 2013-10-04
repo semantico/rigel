@@ -33,7 +33,7 @@ public final class CommonTransformers {
         };
     }
 
-    public static final <I> Function<I,Optional<I>> optional() {
+    public static final <I> Function<I,Optional<I>> optional(Class<I> clazz) {
         return new Function<I, Optional<I>>() {
 
             public Optional<I> apply(I input) {
