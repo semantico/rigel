@@ -17,28 +17,14 @@ import java.util.Collection;
  */
 public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdaptable<T> {
 
-    private final FieldNameSource fieldNameSource;
+    private final String fieldName;
 
-    public SimpleField(final String fieldName) {
-        this.fieldNameSource = new FieldNameSource() {
-            @Override
-            public String getFieldName() {
-                return fieldName;
-            }
-
-            @Override
-            public void bindToContext(RigelContext rigelContext) {
-                //Do Nothing
-            }
-        };
-    }
-
-    public SimpleField(FieldNameSource fieldNameSource) {
-        this.fieldNameSource = fieldNameSource;
+    public SimpleField(String fieldName) {
+        this.fieldName = fieldName;
     }
 
     public String getFieldName() {
-        return fieldNameSource.getFieldName();
+        return fieldName;
     }
 
     @Override
@@ -55,10 +41,6 @@ public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdapta
 
     public MultivaluedField<T> multivalued() {
         return new MultivaluedFieldAdaptor<T>(this);
-    }
-
-    public void bindToContext(RigelContext rigelContext) {
-        this.fieldNameSource.bindToContext(rigelContext);
     }
 
     public static interface FieldNameSource {

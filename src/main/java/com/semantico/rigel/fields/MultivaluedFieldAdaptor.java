@@ -23,9 +23,4 @@ public class MultivaluedFieldAdaptor<R> implements MultivaluedField<R> {
     public Collection<R> getValue(ClassToInstanceMap<FieldDataSource<?>> context) {
         return delegate.getValues(context);
     }
-
-    @Override
-    public void bindToContext(RigelContext rigelContext) {
-        delegate.bindToContext(rigelContext);
-    }
 }

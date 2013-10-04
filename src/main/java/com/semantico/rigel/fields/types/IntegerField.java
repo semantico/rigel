@@ -7,8 +7,4 @@ public class IntegerField extends SimpleField<Integer> {
     public IntegerField(String fieldName) {
         super(fieldName);
     }
-
-    public IntegerField(FieldNameSource fieldNameSource) {
-        super(fieldNameSource);
-    }
 }

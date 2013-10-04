@@ -9,8 +9,4 @@ public class DateField extends SimpleField<Date> {
     public DateField(String fieldName) {
         super(fieldName);
     }
-
-    public DateField(FieldNameSource fieldNameSource) {
-        super(fieldNameSource);
-    }
 }

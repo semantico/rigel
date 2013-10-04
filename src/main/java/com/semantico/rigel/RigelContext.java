@@ -32,11 +32,6 @@ public class RigelContext {
 
         contentItemFactory = new ContentItemFactory(schemas);
         contentRepoFactory = new ContentRepositoryFactory(this.server, config.solrRequestMethod, contentItemFactory);
-
-        for (ContentItem.Schema<?> schema : schemas) {
-            //Yeah, leaking a reference to an object that hasnt finished being constructed.
-            schema.bindToContext(this);
-        }
     }
 
     public <T extends ContentItem> ContentRepository<T> getContentRepository(ContentItem.Schema<T> schema) {

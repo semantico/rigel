@@ -18,10 +18,6 @@ public class HighlightField extends SimpleField<String> {
         super(fieldName);
     }
 
-    public HighlightField(FieldNameSource nameSource) {
-        super(nameSource);
-    }
-
     @Override
     public Collection<String> getValues(ClassToInstanceMap<FieldDataSource<?>> context) {
         return getHighlights(context);

@@ -10,10 +10,4 @@ public interface Field<R> {
 
     R getValue(ClassToInstanceMap<FieldDataSource<?>> context);
 
-    /*
-     * I dont like doing this... god damn you IOC
-     *
-     * Only some fields depend on the context
-     */
-    void bindToContext(RigelContext rigelContext);
 }

@@ -43,19 +43,6 @@ public abstract class FieldSet {
         return ImmutableSet.copyOf(filters);
     }
 
-    public void bindToContext(RigelContext rigelContext) {
-        //Some fields dont have meaning without the rigel context.
-        //e.g. id field is configured
-        for (FieldKey<?,?> key : fields) {
-            key.getField().bindToContext(rigelContext);
-        }
-        for (Filter filter : filters) {
-            for (Field<?> field : filter.getAffectedFields()) {
-                field.bindToContext(rigelContext);
-            }
-        }
-    }
-
     protected void extend(FieldSet subset) {
         fields.addAll(subset.getFields());
         filters.addAll(subset.getFilters());
