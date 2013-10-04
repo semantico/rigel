@@ -1,6 +1,5 @@
 package com.semantico.rigel.test.items;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ public class Play extends ContentItem {
         public FieldKey<?, Long> bigNum;
 
         public Schema() {
+            super(ID);
             type = field(TYPE).build();
             title = field(TITLE).build();
             author = field(AUTHOR).transform(Author.parse()).build();

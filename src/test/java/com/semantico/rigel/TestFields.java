@@ -4,6 +4,7 @@ import com.semantico.rigel.fields.types.*;
 
 public interface TestFields {
 
+    public static final StringField ID = new StringField("id");
     public static final StringField TYPE = new StringField("type");
     public static final StringField TITLE = new StringField("dc_title");
     public static final StringField AUTHOR = new StringField("dc_creator");

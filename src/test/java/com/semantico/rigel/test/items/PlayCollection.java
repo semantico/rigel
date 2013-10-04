@@ -17,6 +17,7 @@ public class PlayCollection extends ContentItem {
         public FieldKey<?, String> type;
 
         public Schema() {
+            super(ID);
             playIds = field(CHILD_IDS.multivalued()).build();
             type = field(TYPE).build();
 

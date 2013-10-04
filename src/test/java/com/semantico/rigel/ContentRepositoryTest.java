@@ -165,7 +165,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
 
         //Get all plays that are in a collection
-        List<Play> results = plays.joinFrom(CHILD_IDS).to(playSchema.getIdField()).get();
+        List<Play> results = plays.joinFrom(CHILD_IDS).to(ID).get();
 
         Collection<String> ids = Collections2.transform(results, ContentItem.getAsFunction(playSchema.id));
         assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2", "play4")));
@@ -178,8 +178,8 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
-            .filterBy(collectionSchema.getIdField().isEqualTo("collection1"))
-            .to(playSchema.getIdField())
+            .filterBy(ID.isEqualTo("collection1"))
+            .to(ID)
             .get();
 
         Collection<String> ids = Collections2.transform(results, ContentItem.getAsFunction(playSchema.id));
@@ -192,8 +192,8 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
-            .filterBy(collectionSchema.getIdField().isEqualTo("collection1"))
-            .to(playSchema.getIdField())
+            .filterBy(ID.isEqualTo("collection1"))
+            .to(ID)
             .filterBy(REALLY_BIG_NUMBER.isEqualTo(1L))//This time filter out play1
             .get();
 

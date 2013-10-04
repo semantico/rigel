@@ -3,24 +3,16 @@ package com.semantico.rigel;
 import java.util.Map;
 
 import com.google.common.base.Function;
-import com.semantico.rigel.fields.ConfigurableFieldName;
 import com.semantico.rigel.fields.types.StringField;
 
 public abstract class ContentItem {
 
     public static abstract class Schema<C extends ContentItem> extends FieldSet {
 
-        private final StringField idField;
+        public final FieldKey<String, String> id;
 
-        public final FieldKey<?, String> id;
-
-        public Schema() {
-            idField = new StringField(new ConfigurableFieldName("id"));
+        public Schema(StringField idField) {
             id = field(idField).build();
-        }
-
-        public StringField getIdField() {
-            return idField;
         }
 
         public abstract C create(Map<DataKey<?>, ? super Object> data);

@@ -20,6 +20,7 @@ public class Book extends ContentItem {
         public FieldKey<?, Integer> chapterCount;
 
         public Schema() {
+            super(ID);
             type = field(TYPE).build();
             title = field(TITLE).build();
             date = field(DATE).build();

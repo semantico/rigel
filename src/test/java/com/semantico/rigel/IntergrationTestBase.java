@@ -60,7 +60,7 @@ public abstract class IntergrationTestBase {
     protected static SolrInputDocument createPlay(String id, String title, String author, Date date, int sceneCount, long bigNum) {
         SolrInputDocument doc = new SolrInputDocument();
         doc.addField(playSchema.type.getField().getFieldName(), "play");
-        doc.addField(playSchema.getIdField().getFieldName(), id);
+        doc.addField(playSchema.id.getField().getFieldName(), id);
         doc.addField(playSchema.title.getField().getFieldName(), title);
         doc.addField(playSchema.author.getField().getFieldName(), author);
         doc.addField(playSchema.date.getField().getFieldName(), date);
@@ -72,7 +72,7 @@ public abstract class IntergrationTestBase {
     protected static SolrInputDocument createBook(String id, String title, Date date, Integer chapterCount) {
         SolrInputDocument doc = new SolrInputDocument();
         doc.addField(bookSchema.type.getField().getFieldName(), "book");
-        doc.addField(bookSchema.getIdField().getFieldName(), id);
+        doc.addField(bookSchema.id.getField().getFieldName(), id);
         doc.addField(bookSchema.title.getField().getFieldName(), title);
         doc.addField(bookSchema.date.getField().getFieldName(), date);
         doc.addField(bookSchema.chapterCount.getField().getFieldName(), chapterCount);
@@ -81,7 +81,7 @@ public abstract class IntergrationTestBase {
 
     protected static SolrInputDocument createPlayCollection(String collectionId, String... playIds) {
         SolrInputDocument doc = new SolrInputDocument();
-        doc.addField(collectionSchema.getIdField().getFieldName(), collectionId);
+        doc.addField(collectionSchema.id.getField().getFieldName(), collectionId);
         doc.addField(collectionSchema.type.getField().getFieldName(), "play-collection");
         for (String playId : playIds) {
             doc.addField(collectionSchema.playIds.getField().getFieldName(), playId);

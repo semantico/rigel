@@ -40,7 +40,7 @@ public class HighlightField extends SimpleField<String> {
         QueryResponse response = context.getInstance(QueryResponseDataSource.class).get();
         Schema<?> schema = context.getInstance(SchemaDataSource.class).get();
 
-        String docId = schema.getIdField().getValue(context);
+        String docId = schema.id.getField().getValue(context);
         if (docId == null) {
             return null;
         }
