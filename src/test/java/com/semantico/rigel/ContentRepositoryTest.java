@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
@@ -28,6 +29,9 @@ import com.semantico.rigel.test.items.Play;
 
 @RunWith(JUnit4.class)
 public class ContentRepositoryTest extends IntergrationTestBase {
+
+    private static ContentRepository<Play> plays;
+    private static ContentRepository<Book> books;
 
     @BeforeClass
     public static void beforeClass() throws SolrServerException, IOException {
@@ -76,33 +80,93 @@ public class ContentRepositoryTest extends IntergrationTestBase {
                 "play4"));
 
         addAndCommit(docs);
+
+        plays = rigel.getContentRepository(playSchema);
+        books = rigel.getContentRepository(bookSchema);
     }
 
     @Test
     public void testDefaultAllQuery() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         List<Play> results = plays.all().get();
         assertEquals(results.size(), 4);
     }
 
     @Test
     public void testDefaultIdQuery() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         Optional<Play> op = plays.id("play1").get();
+
         assertTrue(op.isPresent());
         //Make sure the data was retrieved as expected
-        Play play = op.get();
-        assertEquals(new Author("King, Edd"), play.getAuthor());
-        assertEquals(new Integer(5), play.getSceneCount());
-        assertEquals(new Long(1234567L), play.getBigNum());
-        assertEquals("The Play that got away", play.getTitle());
+        assertEquals("play1", op.get().getId());
+    }
+
+    @Test
+    public void testMissingIdQuery() {
+        Optional<Play> op = plays.id("somethingMadeUp").get();
+        assertTrue(!op.isPresent());
+    }
+
+    @Test
+    public void testForcedIdQuery() {
+        Optional<Book> op = books.id("play1").forceType().get();
+        assertTrue(op.get() instanceof Book);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIdQueryBrokenPrecondition() {
+        plays.id(null).get();//Null not allowed
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIdQueryBrokenPrecondition2() {
+        plays.id("").get();//Empty Id not allowed
+    }
+
+    @Test
+    public void testDefaultIdsQuery() {
+        Map<String, Optional<Play>> results = plays.ids("play1", "play4", "somthingMadeUp").get();
+
+        assertEquals(3, results.size());
+        assertTrue(results.get("play1").isPresent());
+        assertTrue(results.get("play4").isPresent());
+        assertTrue(!results.get("somthingMadeUp").isPresent());
+        assertTrue(results.get("some thing i didnt ask for") == null);
+    }
+
+    @Test
+    public void testCollectionIds() {
+        Map<String, Optional<Play>> results = plays.ids(ImmutableSet.of("play1", "play2")).get();
+        assertEquals(2, results.size());
+        assertTrue(results.get("play1").isPresent());
+        assertTrue(results.get("play2").isPresent());
+    }
+
+    @Test
+    public void testEmptyIdsQuery() {
+        Map<String, Optional<Play>> results = plays.ids().get();
+        assertEquals(0, results.size());
+    }
+
+    @Test
+    public void testForcedIdsQuery() {
+        Map<String, Optional<Book>> results = books.ids("play1", "play2").forceType().get();
+
+        assertTrue(results.get("play1").get() instanceof Book);
+        assertTrue(results.get("play2").get() instanceof Book);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIdsQueryBrokenPrecondition() {
+        plays.ids("bla", "bla", null).get();//Null Not allowed
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIdsQueryBrokenPrecondition2() {
+        plays.ids("bla", "", "bla").get();//Empty Id not allowed
     }
 
     @Test
     public void testDefaultGroupQuery() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
         ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT).get();
 
         //There are 3 distinct scene counts
@@ -115,8 +179,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test
     public void testGroupQuery2() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT).limitResultsPerGroup(100).get();
 
         List<Play> group = groups.get("5");
@@ -134,8 +196,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test
     public void testForceType() {
-        ContentRepository<Book> books = rigel.getContentRepository(bookSchema);
-
         Optional<Book> op = books.id("play1").forceType().get();
         assertTrue(op.isPresent());
 
@@ -145,8 +205,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test(expected = NullPointerException.class)
     public void testForceTypeMissingData() {
-        ContentRepository<Book> books = rigel.getContentRepository(bookSchema);
-
         Optional<Book> op = books.id("play1").forceType().get();
         assertTrue(op.isPresent());
 
@@ -162,8 +220,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test
     public void testJoinQuery() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         //Get all plays that are in a collection
         List<Play> results = plays.joinFrom(CHILD_IDS).to(ID).get();
 
@@ -174,8 +230,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test
     public void testJoinQueryWithFilter() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
             .filterBy(ID.isEqualTo("collection1"))
@@ -188,8 +242,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test
     public void testJoinQueryWithFilter2() {
-        ContentRepository<Play> plays = rigel.getContentRepository(playSchema);
-
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
             .filterBy(ID.isEqualTo("collection1"))
