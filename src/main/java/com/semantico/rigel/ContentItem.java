@@ -39,7 +39,14 @@ public abstract class ContentItem {
         return value;
     }
 
-    public static <T> Function<ContentItem, T> getAsFunction(final DataKey<T> key) {
+    /**
+     * Utility for calling the get(DataKey) method on content items, useful for transforming collections.
+     * e.g.
+     * ids = Collections2.transform(items, funcGet(itemSchema.id));
+     *
+     * @return A Function that returns the result of getting value of the given key on a ContentItem
+     */
+    public static <T> Function<ContentItem, T> funcGet(final DataKey<T> key) {
         return new Function<ContentItem, T>() {
 
             public T apply(ContentItem input) {
