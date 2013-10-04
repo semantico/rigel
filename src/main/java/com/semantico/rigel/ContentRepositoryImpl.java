@@ -92,7 +92,6 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
     @Override
     public IdsQueryBuilder<T> ids(String... ids) {
-        checkArgument(ids != null);
         for (String id : ids) {
             checkArgument(id != null && !id.isEmpty());
         }
@@ -126,12 +125,11 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
                 return ImmutableMap.of();
             }
 
-            SolrQuery q = new SolrQuery();
             Set<Filter> filters = Sets.newHashSet();
             for (String id : ids) {
                 filters.add(Filter.on(schema.id.getField(), id));
             }
-            q.addFilterQuery(Filter.or(filters).toSolrFormat());
+            SolrQuery q = new SolrQuery(Filter.or(filters).toSolrFormat());
             q.setRows(Integer.MAX_VALUE);
             q.setRequestHandler("fetch");
 
