@@ -33,13 +33,21 @@ public final class CommonTransformers {
         };
     }
 
-    public static final <I> Function<I,Optional<I>> optional(Class<I> clazz) {
+    public static final <I> Function<I,Optional<I>> optional() {
         return new Function<I, Optional<I>>() {
 
             public Optional<I> apply(I input) {
                 return Optional.<I>of(input);
             }
         };
+    }
+
+    /*
+     * this version makes it possible to specify the type of optional if you've statically
+     * imported the method
+     */
+    public static final <I> Function<I,Optional<I>> optional(Class<I> clazz) {
+        return CommonTransformers.<I>optional();
     }
 
     /*
