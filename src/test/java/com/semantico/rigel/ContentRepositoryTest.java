@@ -203,6 +203,10 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         assertEquals("The Play that got away", book.getTitle());
     }
 
+    /*
+     * Yes null pointer exception. trying to access missing data
+     * is a programming error
+     */
     @Test(expected = NullPointerException.class)
     public void testForceTypeMissingData() {
         Optional<Book> op = books.id("play1").forceType().get();
@@ -245,7 +249,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
             .filterBy(ID.isEqualTo("collection1"))
-            .to(ID)
+            .to(ID)//do the join
             .filterBy(REALLY_BIG_NUMBER.isEqualTo(1L))//This time filter out play1
             .get();
 
