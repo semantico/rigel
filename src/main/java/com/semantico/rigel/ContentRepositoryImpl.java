@@ -7,6 +7,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.semantico.rigel.ContentRepository.JoinQueryBuilder.PartOne;
@@ -14,6 +17,7 @@ import com.semantico.rigel.ContentRepository.JoinQueryBuilder.PartTwo;
 import com.semantico.rigel.fields.Field;
 import com.semantico.rigel.filters.Filter;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -286,10 +290,10 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         @Override
         public PartOne<T> filterBy(Filter... filters) {
             if (sourceFilter != null) {
-                throw new RuntimeException("multiple filterBy statements not supported for the source filter");
-                //you can join them together with and / or into one filter if you want
+                this.sourceFilter = Filter.and(Lists.asList(sourceFilter, filters));
+            } else {
+                this.sourceFilter = Filter.and(filters);
             }
-            this.sourceFilter = Filter.and(filters);
             return this;
         }
 
