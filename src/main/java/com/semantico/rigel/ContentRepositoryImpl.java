@@ -298,7 +298,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public PartTwo<T> to(Field<?> field) {
+        public PartTwo<T> joinTo(Field<?> field) {
             this.toField = field;
             return new JoinQueryBuilderPart2(this);
         }

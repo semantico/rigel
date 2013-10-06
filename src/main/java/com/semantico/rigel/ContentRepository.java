@@ -87,7 +87,7 @@ public interface ContentRepository<T extends ContentItem> {
              */
             PartOne<T> filter(Filter... filters);
 
-            PartTwo<T> to(Field<?> field);
+            PartTwo<T> joinTo(Field<?> field);
         }
 
         public interface PartTwo<T> {
