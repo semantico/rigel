@@ -236,7 +236,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     public void testJoinQueryWithFilter() {
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
-            .filterBy(ID.isEqualTo("collection1"))
+            .filter(ID.isEqualTo("collection1"))
             .to(ID)
             .get();
 
@@ -248,9 +248,9 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     public void testJoinQueryWithFilter2() {
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
-            .filterBy(ID.isEqualTo("collection1"))
+            .filter(ID.isEqualTo("collection1"))
             .to(ID)//do the join
-            .filterBy(REALLY_BIG_NUMBER.isEqualTo(1L))//This time filter out play1
+            .filter(REALLY_BIG_NUMBER.isEqualTo(1L))//This time filter out play1
             .get();
 
         Collection<String> ids = Collections2.transform(results, ContentItem.funcGet(playSchema.id));

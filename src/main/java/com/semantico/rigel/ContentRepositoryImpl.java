@@ -216,7 +216,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public AllQueryBuilder<T> filterBy(Filter... filters) {
+        public AllQueryBuilder<T> filter(Filter... filters) {
             q.addFilterQuery(Filter.and(filters).toSolrFormat());
             return this;
         }
@@ -288,7 +288,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public PartOne<T> filterBy(Filter... filters) {
+        public PartOne<T> filter(Filter... filters) {
             if (sourceFilter != null) {
                 this.sourceFilter = Filter.and(Lists.asList(sourceFilter, filters));
             } else {
@@ -320,7 +320,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public PartTwo<T> filterBy(Filter... filters) {
+        public PartTwo<T> filter(Filter... filters) {
             q.addFilterQuery(Filter.and(filters).toSolrFormat());
             return this;
         }
@@ -360,7 +360,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public GroupQueryBuilder<T> filterBy(Filter... filters) {
+        public GroupQueryBuilder<T> filter(Filter... filters) {
             q.addFilterQuery(Filter.and(filters).toSolrFormat());
             return this;
         }

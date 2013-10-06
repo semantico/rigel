@@ -36,7 +36,7 @@ public interface ContentRepository<T extends ContentItem> {
 
     public interface AllQueryBuilder<T> {
 
-        AllQueryBuilder<T> filterBy(Filter... filters);
+        AllQueryBuilder<T> filter(Filter... filters);
         AllQueryBuilder<T> orderBy(Field<?> field, ORDER order);
         AllQueryBuilder<T> limit(int count);
         AllQueryBuilder<T> customQuery(QueryHook hook);
@@ -58,13 +58,13 @@ public interface ContentRepository<T extends ContentItem> {
 
     public interface FieldQueryBuilder<T> {
 
-        FieldQueryBuilder<T> filterBy(Filter... filters);
+        FieldQueryBuilder<T> filter(Filter... filters);
         ImmutableList<Count> get();
     }
 
     public interface GroupQueryBuilder<T> {
 
-        GroupQueryBuilder<T> filterBy(Filter... filters);
+        GroupQueryBuilder<T> filter(Filter... filters);
         GroupQueryBuilder<T> orderGroupsBy(Field<?> field, ORDER order);
         GroupQueryBuilder<T> limitGroups(int count);
         GroupQueryBuilder<T> orderWithinGroupBy(Field<?> field, ORDER order);
@@ -85,7 +85,7 @@ public interface ContentRepository<T extends ContentItem> {
             /**
              * Filter the source (from)
              */
-            PartOne<T> filterBy(Filter... filters);
+            PartOne<T> filter(Filter... filters);
 
             PartTwo<T> to(Field<?> field);
         }
@@ -95,7 +95,7 @@ public interface ContentRepository<T extends ContentItem> {
             /**
              * Filter the join results
              */
-            PartTwo<T> filterBy(Filter... filters);
+            PartTwo<T> filter(Filter... filters);
             PartTwo<T> forceType();
 
             ImmutableList<T> get();
