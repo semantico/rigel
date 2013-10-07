@@ -54,6 +54,6 @@ public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdapta
      * Literate Filter methods
      */
     public Filter isEqualTo(T value) {
-        return Filter.on(this, value);
+        return Filter.isEqualTo(this, value);
     }
 }

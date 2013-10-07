@@ -1,24 +1,13 @@
 package com.semantico.rigel.filters;
 
-import org.apache.solr.client.solrj.util.ClientUtils;
-
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableClassToInstanceMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
 import com.semantico.rigel.FieldDataSource;
 import com.semantico.rigel.SolrDocDataSource;
@@ -34,137 +23,63 @@ public abstract class Filter implements Predicate<SolrDocument> {
 
     public abstract Set<Field<?>> getAffectedFields();
 
-    public static <T> Filter on(final Field<T> field, final T value) {
-        return new Filter() {
-
-            public boolean apply(SolrDocument input) {
-                T actual = getFieldValue(field, input);
-                return value.equals(actual);
-            }
-
-            public String toSolrFormat() {
-                return String.format("%s:%s", field.getFieldName(), ClientUtils.escapeQueryChars(value.toString()));
-            }
-
-            public Set<Field<?>> getAffectedFields() {
-                return ImmutableSet.<Field<?>>of(field);
-            }
-        };
+    public Filter and(Filter filter) {
+        return new AndFilter(this, filter);
     }
 
-    public static <T extends Comparable<T>> Filter on(final Field<T> field, final Range<T> range) {
-        return Filter.on(field, range, Functions.toStringFunction());
+    public Filter or(Filter filter) {
+        return new OrFilter(this, filter);
     }
 
-    public static <T extends Comparable<T>> Filter on(final Field<T> field, final Range<T> range, final Function<? super T, String> valueToSolrFormat) {
-
-        return new Filter() {
-
-            public boolean apply(SolrDocument input) {
-                T actual = getFieldValue(field, input);
-                return actual != null && range.contains(actual);
-            }
-
-            public String toSolrFormat() {
-                final String upperBound = range.hasUpperBound() ? valueToSolrFormat.apply(range.upperEndpoint()) : "*";
-                final String lowerBound = range.hasLowerBound() ? valueToSolrFormat.apply(range.lowerEndpoint()) : "*";
-                final String lowerBoundChar = !range.hasLowerBound() || range.lowerBoundType() == BoundType.CLOSED ? "[" : "{";
-                final String upperBoundChar = !range.hasUpperBound() || range.upperBoundType() == BoundType.CLOSED ? "]" : "}";
-                return String.format("%s:%s%s TO %s%s", field.getFieldName(), lowerBoundChar, lowerBound, upperBound, upperBoundChar);
-            }
-
-            public Set<Field<?>> getAffectedFields() {
-                return ImmutableSet.<Field<?>>of(field);
-            }
-        };
-    }
-
-    public static Filter and(Filter...filters ) {
-        return Filter.join(Connective.AND, filters);
-    }
-
-    public static Filter and(Iterable<Filter> filters) {
-        return Filter.join(Connective.AND, filters);
-    }
-
-    public static Filter or(Filter...filters) {
-        return Filter.join(Connective.OR, filters);
-    }
-
-    public static Filter or(Iterable<Filter> filters) {
-        return Filter.join(Connective.OR, filters);
-    }
-
-    private static enum Connective {
-        AND {
-            public <T> Predicate<T> join(Iterable<? extends Predicate<T>> predicates) {
-                return Predicates.and(predicates);
-            }
-        }, OR {
-            public <T> Predicate<T> join(Iterable<? extends Predicate<T>> predicates) {
-                return Predicates.or(predicates);
-            }
-        };
-
-        public abstract <T> Predicate<T> join(Iterable<? extends Predicate<T>> predicates);
-    }
-
-    private static Filter join(Connective connective, Filter... filters) {
-        return Filter.join(connective, Arrays.asList(filters));
-    }
-
-    private static Filter join(final Connective connective, final Iterable<Filter> filters) {
-        if (Iterables.size(filters) < 1) {
-            return new Filter() {//NOOP Filter
-                public boolean apply(SolrDocument input) {
-                    return true;
-                }
-
-                public String toSolrFormat() {
-                    return "";
-                }
-
-                public Set<Field<?>> getAffectedFields() {
-                    return ImmutableSet.of();
-                }
-            };
-
-        }
-        return new Filter() {
-
-            private final Predicate<SolrDocument> predicate = connective.join(filters);
-
-            public boolean apply(SolrDocument input) {
-                return predicate.apply(input);
-            }
-
-            public String toSolrFormat() {
-                Joiner joiner = Joiner.on(String.format(" %s ", connective.name()));
-
-                Function<Filter,String> toSolrFormat = new Function<Filter,String>() {
-                    public String apply(Filter input) {
-                        return input.toSolrFormat();
-                    }
-                };
-                return String.format("(%s)", joiner.join(Iterables.transform(filters, toSolrFormat)));
-            }
-
-            public Set<Field<?>> getAffectedFields() {
-                Builder<Field<?>> list = ImmutableSet.builder();
-                for(Filter filter : filters) {
-                    list.addAll(filter.getAffectedFields());
-                }
-                return list.build();
-            }
-        };
+    public Filter group() {
+        return new GroupFilter(this);
     }
 
     /**
      * Helper method to wrap the solr doc up in a context & get the value using the field
      */
-    private static <T> T getFieldValue(Field<T> field, SolrDocument doc) {
+    protected <T> T getFieldValue(Field<T> field, SolrDocument doc) {
         ImmutableClassToInstanceMap.Builder<FieldDataSource<?>> context = ImmutableClassToInstanceMap.builder();
         context.put(SolrDocDataSource.class, new SolrDocDataSource(doc));
         return field.getValue(context.build());
+    }
+
+    protected String escapeQueryChars(String input) {
+        return ClientUtils.escapeQueryChars(input);
+    }
+
+    /*
+     * Static methods for constructing filters. shield you from the actual type
+     */
+    public static <T> Filter isEqualTo(Field<T> field, T value) {
+        return new EqualsFilter<T>(field, value);
+    }
+
+    public static Filter startsWith(Field<String> field, String value) {
+        return new StartsWithFilter(field, value);
+    }
+
+    public static <T extends Comparable<T>> Filter isInRange(Field<T> field, Range<T> range) {
+        return new RangeFilter<T>(field, range);
+    }
+
+    public static Filter everything() {
+        return new EverythingFilter();
+    }
+
+    public static Filter or(Filter... filters) {
+        return new OrFilter(filters);
+    }
+
+    public static Filter or(Collection<Filter> filters) {
+        return new OrFilter(filters);
+    }
+
+    public static Filter and(Filter... filters) {
+        return new AndFilter(filters);
+    }
+
+    public static Filter and(Collection<Filter> filters) {
+        return new AndFilter(filters);
     }
 }
