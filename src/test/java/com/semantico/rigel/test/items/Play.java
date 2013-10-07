@@ -28,7 +28,7 @@ public class Play extends TestItem {
             sceneCount = field(SCENE_COUNT).build();
             bigNum = field(REALLY_BIG_NUMBER).build();
 
-            filter(TYPE.isEqualTo("play"));
+            filter(TYPE.equalTo("play"));
         }
 
         @Override

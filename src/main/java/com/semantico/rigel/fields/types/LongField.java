@@ -1,8 +1,8 @@
 package com.semantico.rigel.fields.types;
 
-import com.semantico.rigel.fields.SimpleField;
+import com.semantico.rigel.fields.RangeField;
 
-public class LongField extends SimpleField<Long> {
+public class LongField extends RangeField<Long> {
 
     public LongField(String fieldName) {
         super(fieldName);

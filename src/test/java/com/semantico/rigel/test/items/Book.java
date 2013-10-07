@@ -25,7 +25,7 @@ public class Book extends TestItem {
             date = field(DATE).build();
             chapterCount = field(CHAPTER_COUNT).build();
 
-            filter(TYPE.isEqualTo("test"));
+            filter(TYPE.equalTo("test"));
         }
 
         @Override

@@ -20,7 +20,7 @@ public class PlayCollection extends TestItem {
             playIds = field(CHILD_IDS.multivalued()).build();
             type = field(TYPE).build();
 
-            filter(TYPE.isEqualTo("play-collection"));
+            filter(TYPE.equalTo("play-collection"));
         }
 
         public PlayCollection create(Map<DataKey<?>, ? super Object> data) {

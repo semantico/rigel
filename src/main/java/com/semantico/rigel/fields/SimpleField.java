@@ -6,6 +6,7 @@ import com.semantico.rigel.RigelContext;
 import com.semantico.rigel.SolrDocDataSource;
 
 import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.Range;
 
 import com.semantico.rigel.FieldDataSource;
 import com.semantico.rigel.filters.Filter;
@@ -53,7 +54,8 @@ public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdapta
     /*
      * Literate Filter methods
      */
-    public Filter isEqualTo(T value) {
+    public Filter equalTo(T value) {
         return Filter.isEqualTo(this, value);
     }
+
 }

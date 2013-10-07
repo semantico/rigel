@@ -104,7 +104,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     @Test
     public void testAllQueryFilter() {
         List<Play> results = plays.all()
-            .filter(SCENE_COUNT.isEqualTo(5))
+            .filter(SCENE_COUNT.equalTo(5))
             .get();
         assertEquals(results.size(), 2);
     }
@@ -112,7 +112,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     @Test
     public void testAllQueryForced() {
         List<TestItem> results = items.all()
-            .filter(TYPE.isEqualTo("play"))
+            .filter(TYPE.equalTo("play"))
             .forceType()
             .get();
 
@@ -126,7 +126,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     @Test
     public void testAllQueryNotForcedByDefault() {
         List<TestItem> results = items.all()
-            .filter(TYPE.isEqualTo("play"))
+            .filter(TYPE.equalTo("play"))
             .get();
 
         assertEquals(4, results.size());
@@ -282,7 +282,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     public void testJoinQueryWithFilter() {
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
-            .filter(ID.isEqualTo("collection1"))
+            .filter(ID.equalTo("collection1"))
             .joinTo(ID)
             .get();
 
@@ -294,9 +294,9 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     public void testJoinQueryWithFilter2() {
         //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
-            .filter(ID.isEqualTo("collection1"))
+            .filter(ID.equalTo("collection1"))
             .joinTo(ID)//do the join
-            .filter(REALLY_BIG_NUMBER.isEqualTo(1L))//This time filter out play1
+            .filter(REALLY_BIG_NUMBER.equalTo(1L))//This time filter out play1
             .get();
 
         Collection<String> ids = Collections2.transform(results, ContentItem.funcGet(playSchema.id));

@@ -59,7 +59,7 @@ public abstract class FieldSet {
         fields.add(key);
     }
 
-    protected <R> FieldKeyBuilder<R, R> field(SimpleField<R> field) {
+    protected <R extends Comparable<R>> FieldKeyBuilder<R, R> field(SimpleField<R> field) {
         return new FieldKeyBuilder<R,R>(field, Maps.<String,String>newHashMap(), Functions.<R>identity(), false, this);
     }
 

@@ -1,8 +1,8 @@
 package com.semantico.rigel.fields.types;
 
-import com.semantico.rigel.fields.SimpleField;
+import com.semantico.rigel.fields.RangeField;
 
-public class IntegerField extends SimpleField<Integer> {
+public class IntegerField extends RangeField<Integer> {
 
     public IntegerField(String fieldName) {
         super(fieldName);
