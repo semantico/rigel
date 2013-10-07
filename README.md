@@ -1,6 +1,6 @@
 #Rigel
 
-Rigel is a client library for Apache Solr and framework for mapping results to domain objects.
+Rigel is a java client library for Apache Solr and framework for mapping results to domain objects.
 
 Major Features:
 - A type-safe literate API for performing queries
