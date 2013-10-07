@@ -23,15 +23,16 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.semantico.rigel.test.items.Author;
 import com.semantico.rigel.test.items.Book;
 import com.semantico.rigel.test.items.Play;
+import com.semantico.rigel.test.items.TestItem;
 
 @RunWith(JUnit4.class)
 public class ContentRepositoryTest extends IntergrationTestBase {
 
     private static ContentRepository<Play> plays;
     private static ContentRepository<Book> books;
+    private static ContentRepository<TestItem> items;
 
     @BeforeClass
     public static void beforeClass() throws SolrServerException, IOException {
@@ -83,12 +84,57 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
         plays = rigel.getContentRepository(playSchema);
         books = rigel.getContentRepository(bookSchema);
+        items = rigel.getContentRepository(testItemSchema);
     }
 
     @Test
     public void testDefaultAllQuery() {
         List<Play> results = plays.all().get();
         assertEquals(results.size(), 4);
+    }
+
+    @Test
+    public void testAllQueryLimit() {
+        List<Play> results = plays.all()
+            .limit(2)
+            .get();
+        assertEquals(results.size(), 2);
+    }
+
+    @Test
+    public void testAllQueryFilter() {
+        List<Play> results = plays.all()
+            .filter(SCENE_COUNT.isEqualTo(5))
+            .get();
+        assertEquals(results.size(), 2);
+    }
+
+    @Test
+    public void testAllQueryForced() {
+        List<TestItem> results = items.all()
+            .filter(TYPE.isEqualTo("play"))
+            .forceType()
+            .get();
+
+        assertEquals(4, results.size());
+        for (TestItem item : results) {
+            //Test that the runtime type is actually TestItem
+            assertTrue(item.getClass().isAssignableFrom(TestItem.class));
+        }
+    }
+
+    @Test
+    public void testAllQueryNotForcedByDefault() {
+        List<TestItem> results = items.all()
+            .filter(TYPE.isEqualTo("play"))
+            .get();
+
+        assertEquals(4, results.size());
+        for (TestItem item : results) {
+            //Test that the runtime type is actually a subclass of TestItem
+            assertTrue(!item.getClass().isAssignableFrom(TestItem.class));//TestItem is not a Play
+            assertTrue(item instanceof TestItem);//A Play is a TestItem
+        }
     }
 
     @Test

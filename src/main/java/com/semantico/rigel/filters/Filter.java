@@ -114,6 +114,22 @@ public abstract class Filter implements Predicate<SolrDocument> {
     }
 
     private static Filter join(final Connective connective, final Iterable<Filter> filters) {
+        if (Iterables.size(filters) < 1) {
+            return new Filter() {//NOOP Filter
+                public boolean apply(SolrDocument input) {
+                    return true;
+                }
+
+                public String toSolrFormat() {
+                    return "";
+                }
+
+                public Set<Field<?>> getAffectedFields() {
+                    return ImmutableSet.of();
+                }
+            };
+
+        }
         return new Filter() {
 
             private final Predicate<SolrDocument> predicate = connective.join(filters);

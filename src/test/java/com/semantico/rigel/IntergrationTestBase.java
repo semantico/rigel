@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -15,6 +16,7 @@ import org.apache.solr.core.CoreContainer;
 import com.semantico.rigel.test.items.Book;
 import com.semantico.rigel.test.items.Play;
 import com.semantico.rigel.test.items.PlayCollection;
+import com.semantico.rigel.test.items.TestItem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -26,6 +28,7 @@ public abstract class IntergrationTestBase {
     protected static Play.Schema playSchema;
     protected static PlayCollection.Schema collectionSchema;
     protected static Book.Schema bookSchema;
+    protected static TestItem.Schema<TestItem> testItemSchema;
 
     public static String getSolrHome() {
         try {
@@ -48,6 +51,13 @@ public abstract class IntergrationTestBase {
         playSchema = new Play.Schema();
         bookSchema = new Book.Schema();
         collectionSchema = new PlayCollection.Schema();
+        //Make a basic test item schema so we can check forced type
+        testItemSchema = new TestItem.Schema<TestItem>() {
+            @Override
+            public TestItem create(Map<DataKey<?>, ? super Object> data) {
+                return new TestItem(this, data);
+            }
+        };
 
         Config config = ConfigFactory.load(propertiesFile);
         rigel = RigelContext.builder()

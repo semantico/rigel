@@ -9,9 +9,9 @@ import com.semantico.rigel.FieldKey;
 
 import static com.semantico.rigel.TestFields.*;
 
-public class Play extends ContentItem {
+public class Play extends TestItem {
 
-    public static class Schema extends ContentItem.Schema<Play> {
+    public static class Schema extends TestItem.Schema<Play> {
 
         public FieldKey<?, String> title;
         public FieldKey<?, String> type;
@@ -21,7 +21,6 @@ public class Play extends ContentItem {
         public FieldKey<?, Long> bigNum;
 
         public Schema() {
-            super(ID);
             type = field(TYPE).build();
             title = field(TITLE).build();
             author = field(AUTHOR).transform(Author.parse()).build();

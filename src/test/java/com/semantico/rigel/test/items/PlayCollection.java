@@ -9,15 +9,14 @@ import com.semantico.rigel.FieldKey;
 import com.semantico.rigel.TestFields;
 import static com.semantico.rigel.TestFields.*;
 
-public class PlayCollection extends ContentItem {
+public class PlayCollection extends TestItem {
 
-    public static class Schema extends ContentItem.Schema<PlayCollection> {
+    public static class Schema extends TestItem.Schema<PlayCollection> {
 
         public FieldKey<?, Collection<String>> playIds;
         public FieldKey<?, String> type;
 
         public Schema() {
-            super(ID);
             playIds = field(CHILD_IDS.multivalued()).build();
             type = field(TYPE).build();
 

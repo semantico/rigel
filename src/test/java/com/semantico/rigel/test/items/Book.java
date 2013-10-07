@@ -10,9 +10,9 @@ import com.semantico.rigel.ContentItem.Schema;
 
 import static com.semantico.rigel.TestFields.*;
 
-public class Book extends ContentItem {
+public class Book extends TestItem {
 
-    public static class Schema extends ContentItem.Schema<Book> {
+    public static class Schema extends TestItem.Schema<Book> {
 
         public FieldKey<?, String> title;
         public FieldKey<?, String> type;
@@ -20,7 +20,6 @@ public class Book extends ContentItem {
         public FieldKey<?, Integer> chapterCount;
 
         public Schema() {
-            super(ID);
             type = field(TYPE).build();
             title = field(TITLE).build();
             date = field(DATE).build();
