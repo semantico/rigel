@@ -1,17 +1,16 @@
 package com.semantico.rigel.fields;
 
+import java.util.Collection;
+
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ClassToInstanceMap;
+import com.semantico.rigel.FieldDataSource;
 import com.semantico.rigel.RigelContext;
 import com.semantico.rigel.SolrDocDataSource;
-
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.Range;
-
-import com.semantico.rigel.FieldDataSource;
 import com.semantico.rigel.filters.Filter;
-
-import java.util.Collection;
 
 /*
  * well... it started simple

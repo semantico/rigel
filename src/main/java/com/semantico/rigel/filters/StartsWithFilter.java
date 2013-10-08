@@ -2,6 +2,7 @@ package com.semantico.rigel.filters;
 
 import java.util.Set;
 
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
 import com.google.common.collect.ImmutableSet;
@@ -32,7 +33,7 @@ public class StartsWithFilter extends Filter {
 
     @Override
     public String toSolrFormat() {
-        return String.format("%s:%s*", field.getFieldName(), escapeQueryChars(value.toString()));
+        return String.format("%s:%s*", field.getFieldName(), ClientUtils.escapeQueryChars(value));
     }
 
     @Override

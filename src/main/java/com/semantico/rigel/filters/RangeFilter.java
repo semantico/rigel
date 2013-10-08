@@ -5,7 +5,6 @@ import java.util.Set;
 import org.apache.solr.common.SolrDocument;
 
 import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
@@ -16,10 +15,6 @@ public class RangeFilter<T extends Comparable<T>> extends Filter {
     private final Field<T> field;
     private final Range<T> range;
     private final Function<? super T, String> valueToSolrFormat;
-
-    public RangeFilter(Field<T> field, Range<T> range) {
-        this(field, range, Functions.toStringFunction());
-    }
 
     public RangeFilter(Field<T> field, Range<T> range, Function<? super T, String> valueToSolrFormat) {
         this.field = field;

@@ -19,7 +19,6 @@ public class FilterTest {
     private static final IntegerField COUNT = new IntegerField("count");
     private static final DateField DATE = new DateField("date");
 
-
     @Test
     public void testIsEqualTo() {
         Filter filter;
@@ -34,8 +33,9 @@ public class FilterTest {
 
         Calendar c = Calendar.getInstance();
         c.set(2000, 0, 1, 0,0,0);//jan 1st 2000 00:00:00
+        c.set(Calendar.MILLISECOND, 0);
 
         filter = DATE.equalTo(c.getTime());
-        assertEquals("date:5", filter.toSolrFormat());
+        assertEquals("date:2000-01-01T00:00:00.000Z", filter.toSolrFormat());
     }
 }
