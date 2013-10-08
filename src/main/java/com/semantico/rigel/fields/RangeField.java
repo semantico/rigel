@@ -2,6 +2,7 @@ package com.semantico.rigel.fields;
 
 import com.google.common.collect.Range;
 import com.semantico.rigel.filters.Filter;
+import com.semantico.rigel.filters.RangeFilter;
 
 public class RangeField<T extends Comparable<T>> extends SimpleField<T> {
 
@@ -9,19 +10,23 @@ public class RangeField<T extends Comparable<T>> extends SimpleField<T> {
         super(fieldName);
     }
 
-    public Filter greaterThan(T value) {
+    public RangeFilter<T> greaterThan(T value) {
         return Filter.isInRange(this, Range.greaterThan(value));
     }
 
-    public Filter lessThan(T value) {
+    public RangeFilter<T> lessThan(T value) {
         return Filter.isInRange(this, Range.lessThan(value));
     }
 
-    public Filter atLeast(T value) {
+    public RangeFilter<T> atLeast(T value) {
         return Filter.isInRange(this, Range.atLeast(value));
     }
 
-    public Filter atMost(T value) {
+    public RangeFilter<T> atMost(T value) {
         return Filter.isInRange(this, Range.atMost(value));
+    }
+
+    public Filter isInRange(Range<T> range) {
+        return Filter.isInRange(this, range);
     }
 }

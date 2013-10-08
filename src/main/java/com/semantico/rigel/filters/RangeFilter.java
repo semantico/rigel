@@ -41,4 +41,20 @@ public class RangeFilter<T extends Comparable<T>> extends Filter {
     public Set<Field<?>> getAffectedFields() {
         return ImmutableSet.<Field<?>>of(field);
     }
+
+    public Filter andGreaterThan(T value) {
+        return new RangeFilter<T>(field, Range.greaterThan(value).intersection(range),valueToSolrFormat);
+    }
+
+    public Filter andLessThan(T value) {
+        return new RangeFilter<T>(field, Range.lessThan(value).intersection(range),valueToSolrFormat);
+    }
+
+    public Filter andAtLeast(T value) {
+        return new RangeFilter<T>(field, Range.atLeast(value).intersection(range),valueToSolrFormat);
+    }
+
+    public Filter andAtMost(T value) {
+        return new RangeFilter<T>(field, Range.atMost(value).intersection(range),valueToSolrFormat);
+    }
 }

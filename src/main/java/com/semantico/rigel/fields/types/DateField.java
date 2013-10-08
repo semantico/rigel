@@ -8,6 +8,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Range;
 import com.semantico.rigel.fields.RangeField;
 import com.semantico.rigel.filters.Filter;
+import com.semantico.rigel.filters.RangeFilter;
 
 public class DateField extends RangeField<Date> {
 
@@ -26,23 +27,33 @@ public class DateField extends RangeField<Date> {
      * Override the literate equals & range methods, dates have a custom format
      */
 
+    @Override
     public Filter equalTo(Date value) {
         return Filter.isEqualTo(this, value, DATE_TO_SOLR);
     }
 
-    public Filter greaterThan(Date value) {
+    @Override
+    public RangeFilter<Date> greaterThan(Date value) {
         return Filter.isInRange(this, Range.greaterThan(value), DATE_TO_SOLR);
     }
 
-    public Filter lessThan(Date value) {
+    @Override
+    public RangeFilter<Date> lessThan(Date value) {
         return Filter.isInRange(this, Range.lessThan(value), DATE_TO_SOLR);
     }
 
-    public Filter atLeast(Date value) {
+    @Override
+    public RangeFilter<Date> atLeast(Date value) {
         return Filter.isInRange(this, Range.atLeast(value), DATE_TO_SOLR);
     }
 
-    public Filter atMost(Date value) {
+    @Override
+    public RangeFilter<Date> atMost(Date value) {
         return Filter.isInRange(this, Range.atMost(value), DATE_TO_SOLR);
+    }
+
+    @Override
+    public Filter isInRange(Range<Date> range) {
+        return Filter.isInRange(this, range, DATE_TO_SOLR);
     }
 }

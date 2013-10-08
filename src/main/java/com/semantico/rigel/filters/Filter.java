@@ -69,11 +69,11 @@ public abstract class Filter implements Predicate<SolrDocument> {
         return new StartsWithFilter(field, value);
     }
 
-    public static <T extends Comparable<T>> Filter isInRange(Field<T> field, Range<T> range, Function<? super T, String> toSolrFormatFunc) {
+    public static <T extends Comparable<T>> RangeFilter<T> isInRange(Field<T> field, Range<T> range, Function<? super T, String> toSolrFormatFunc) {
         return new RangeFilter<T>(field, range, toSolrFormatFunc);
     }
 
-    public static <T extends Comparable<T>> Filter isInRange(Field<T> field, Range<T> range) {
+    public static <T extends Comparable<T>> RangeFilter<T> isInRange(Field<T> field, Range<T> range) {
         return isInRange(field, range, DEFAULT_TO_SOLR);
     }
 
