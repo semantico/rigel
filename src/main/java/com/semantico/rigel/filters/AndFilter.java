@@ -26,9 +26,33 @@ public class AndFilter extends ConnectiveFilter {
         this(Arrays.asList(filters));
     }
 
-    public AndFilter(Collection<Filter> filters) {
-        this.filters = Lists.newArrayList(filters);
+    public AndFilter(Collection<Filter> input) {
+        this.filters = Lists.newArrayList();
+        for (Filter filter : input) {
+            unpack(filter, filters);
+        }
         this.predicate = Predicates.and(filters);
+    }
+
+    /**
+     * Unpack the filters into one list.
+     * Flatten the tree structure for Ands that are semantically the same as a single node
+     *
+     *  A              A
+     * /\             /|\
+     *O  A  ---->    O O O
+     *  /\
+     * O  O
+     */
+    private void unpack(Filter filter, Collection<Filter> filters) {
+        if (filter instanceof AndFilter) {
+            AndFilter and = (AndFilter) filter;
+            for(Filter f : and.filters) {
+                unpack(f, filters);
+            }
+        } else {
+            filters.add(filter);
+        }
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.semantico.rigel.fields.Field;
 
 //rename SymmetricConnectiveFilter ?
@@ -24,9 +24,8 @@ public abstract class ConnectiveFilter extends Filter {
         return builder.build();
     }
 
-    protected Set<String> getSolrFilters() {
-        Set<String> solrFilters = Sets.newHashSet();
-        //yes set! we can remove duplicate terms because its symmetric
+    protected List<String> getSolrFilters() {
+        List<String> solrFilters = Lists.newArrayList();
 
         for (Filter filter : getJoinedFilters()) {
             String solrFilter = filter.toSolrFormat();

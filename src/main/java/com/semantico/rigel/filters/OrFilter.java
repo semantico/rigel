@@ -26,9 +26,33 @@ public class OrFilter extends ConnectiveFilter {
         this(Arrays.asList(filters));
     }
 
-    public OrFilter(Collection<Filter> filters) {
-        this.filters = Lists.newArrayList(filters);
+    public OrFilter(Collection<Filter> input) {
+        this.filters = Lists.newArrayList();
+        for (Filter filter : input) {
+            unpack(filter, filters);
+        }
         this.predicate = Predicates.or(filters);
+    }
+
+    /**
+     * Unpack the filters into one list.
+     * Flatten the tree structure for Or that are semantically the same as a single node
+     *
+     *  A              A
+     * /\             /|\
+     *O  A  ---->    O O O
+     *  /\
+     * O  O
+     */
+    private void unpack(Filter filter, Collection<Filter> filters) {
+        if (filter instanceof OrFilter) {
+            OrFilter or = (OrFilter) filter;
+            for(Filter f : or.filters) {
+                unpack(f, filters);
+            }
+        } else {
+            filters.add(filter);
+        }
     }
 
     @Override
