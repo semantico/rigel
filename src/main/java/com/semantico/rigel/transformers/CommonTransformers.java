@@ -1,12 +1,20 @@
 package com.semantico.rigel.transformers;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Optional;
 
 public final class CommonTransformers {
@@ -42,13 +50,110 @@ public final class CommonTransformers {
         };
     }
 
-    /*
-     * this version makes it possible to specify the type of optional if you've statically
-     * imported the method
-     */
     public static final <I> Function<I,Optional<I>> optional(Class<I> clazz) {
         return CommonTransformers.<I>optional();
     }
+
+    /*
+     * Functions to deal with Collections
+     */
+
+    public static final <I, O> Function<Iterable<I>, Collection<O>> asCollection(final Function<? super I, O> func) {
+        return new Function<Iterable<I>, Collection<O>>() {
+
+            public Collection<O> apply(Iterable<I> input) {
+                List<O> output = Lists.newArrayList();
+                for (I value : input) {
+                    output.add(func.apply(value));
+                }
+                return output;
+            }
+        };
+    }
+
+    public static final <I> Function<Iterable<I>, Collection<I>> asCollection() {
+        return asCollection(Functions.<I>identity());
+    }
+
+    public static final <I> Function<Iterable<I>, Collection<I>> asCollection(Class<I> clazz) {
+        return CommonTransformers.<I>asCollection();
+    }
+
+    public static final <I, O> Function<Iterable<I>, List<O>> asList(final Function<? super I, O> func) {
+        return new Function<Iterable<I>, List<O>>() {
+
+            public List<O> apply(Iterable<I> input) {
+                List<O> output = Lists.newArrayList();
+                for (I value : input) {
+                    output.add(func.apply(value));
+                }
+                return output;
+            }
+        };
+    }
+
+    public static final <I> Function<Iterable<I>, List<I>> asList() {
+        return asList(Functions.<I>identity());
+    }
+
+    public static final <I> Function<Iterable<I>, List<I>> asList(Class<I> clazz) {
+        return CommonTransformers.<I>asList();
+    }
+
+    public static final <I, O> Function<Iterable<I>, Set<O>> asSet(final Function<? super I, O> func) {
+        return new Function<Iterable<I>, Set<O>>() {
+
+            public Set<O> apply(Iterable<I> input) {
+                Set<O> output = Sets.newHashSet();
+                for (I value : input) {
+                    output.add(func.apply(value));
+                }
+                return output;
+            }
+        };
+    }
+
+    public static final <I> Function<Iterable<I>, Set<I>> asSet() {
+        return asSet(Functions.<I>identity());
+    }
+
+    public static final <I> Function<Iterable<I>, Set<I>> asSet(Class<I> clazz) {
+        return CommonTransformers.<I>asSet();
+    }
+
+    /*
+     * Grouping
+     */
+
+    public static final <I, K> GroupByFunction<I, K, I> groupBy(Function<I, K> keyFunc) {
+        return new GroupByFunction<I, K, I>(keyFunc, Functions.<I>identity());
+    }
+
+    public static class GroupByFunction<I, K, V> implements Function<Iterable<I>, ListMultimap<K, V>> {
+
+        private final Function<? super I, K> keyFunc;
+        private final Function<? super I, V> valueFunc;
+
+        public GroupByFunction(Function<? super I, K> keyFunc, Function<? super I, V> valueFunc) {
+            this.keyFunc = keyFunc;
+            this.valueFunc = valueFunc;
+        }
+
+        public ListMultimap<K, V> apply(Iterable<I> input) {
+            ImmutableListMultimap.Builder<K, V> builder = ImmutableListMultimap.builder();
+            for (I value : input) {
+                K key = keyFunc.apply(value);
+                V outputVal = valueFunc.apply(value);
+                builder.put(key, outputVal);
+            }
+            return builder.build();
+        }
+
+        public <O> Function<Iterable<I>, ListMultimap<K, O>> as(Function<V, O> newValueFunc) {
+            return new GroupByFunction<I, K, O>(keyFunc, Functions.compose(newValueFunc, valueFunc));
+        }
+    }
+
 
     /*
      * String Transformers
