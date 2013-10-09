@@ -273,7 +273,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         //Get all plays that are in a collection
         List<Play> results = plays.joinFrom(CHILD_IDS).joinTo(ID).get();
 
-        Collection<String> ids = Collections2.transform(results, ContentItem.funcGet(playSchema.id));
+        Collection<String> ids = Collections2.transform(results, playSchema.id);
         assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2", "play4")));
         assertTrue(!ids.contains("play3"));
     }
@@ -286,7 +286,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
             .joinTo(ID)
             .get();
 
-        Collection<String> ids = Collections2.transform(results, ContentItem.funcGet(playSchema.id));
+        Collection<String> ids = Collections2.transform(results, playSchema.id);
         assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2")));
     }
 
@@ -299,7 +299,7 @@ public class ContentRepositoryTest extends IntergrationTestBase {
             .filter(REALLY_BIG_NUMBER.equalTo(1L))//This time filter out play1
             .get();
 
-        Collection<String> ids = Collections2.transform(results, ContentItem.funcGet(playSchema.id));
+        Collection<String> ids = Collections2.transform(results, playSchema.id);
         assertTrue(ids.contains("play2"));
         assertTrue(!ids.contains("play1"));
     }

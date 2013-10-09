@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 import com.semantico.rigel.fields.Field;
 
 
-public interface FieldKey<R, F> extends DataKey<F> {
+public interface FieldKey<R, F> extends DataKey<F>, Function<ContentItem, F>{
 
     Field<R> getField();
 

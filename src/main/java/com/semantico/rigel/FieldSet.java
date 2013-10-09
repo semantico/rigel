@@ -120,6 +120,11 @@ public abstract class FieldSet {
                 return formatRawValue(((R) map.get(this)));
             }
         }
+
+        @Override
+        public F apply(ContentItem item) {
+            return item.get(this);
+        }
     }
 
 
