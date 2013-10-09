@@ -58,10 +58,10 @@ public final class CommonTransformers {
      * Functions to deal with Collections
      */
 
-    public static final <I, O> Function<Iterable<I>, Collection<O>> asCollection(final Function<? super I, O> func) {
-        return new Function<Iterable<I>, Collection<O>>() {
+    public static final <I, O> Function<Iterable<? extends I>, Collection<O>> asCollection(final Function<? super I, O> func) {
+        return new Function<Iterable<? extends I>, Collection<O>>() {
 
-            public Collection<O> apply(Iterable<I> input) {
+            public Collection<O> apply(Iterable<? extends I> input) {
                 List<O> output = Lists.newArrayList();
                 for (I value : input) {
                     output.add(func.apply(value));
@@ -71,18 +71,18 @@ public final class CommonTransformers {
         };
     }
 
-    public static final <I> Function<Iterable<I>, Collection<I>> asCollection() {
+    public static final <I> Function<Iterable<? extends I>, Collection<I>> asCollection() {
         return asCollection(Functions.<I>identity());
     }
 
-    public static final <I> Function<Iterable<I>, Collection<I>> asCollection(Class<I> clazz) {
+    public static final <I> Function<Iterable<? extends I>, Collection<I>> asCollection(Class<I> clazz) {
         return CommonTransformers.<I>asCollection();
     }
 
-    public static final <I, O> Function<Iterable<I>, List<O>> asList(final Function<? super I, O> func) {
-        return new Function<Iterable<I>, List<O>>() {
+    public static final <I, O> Function<Iterable<? extends I>, List<O>> asList(final Function<? super I, O> func) {
+        return new Function<Iterable<? extends I>, List<O>>() {
 
-            public List<O> apply(Iterable<I> input) {
+            public List<O> apply(Iterable<? extends I> input) {
                 List<O> output = Lists.newArrayList();
                 for (I value : input) {
                     output.add(func.apply(value));
@@ -92,18 +92,18 @@ public final class CommonTransformers {
         };
     }
 
-    public static final <I> Function<Iterable<I>, List<I>> asList() {
+    public static final <I> Function<Iterable<? extends I>, List<I>> asList() {
         return asList(Functions.<I>identity());
     }
 
-    public static final <I> Function<Iterable<I>, List<I>> asList(Class<I> clazz) {
+    public static final <I> Function<Iterable<? extends I>, List<I>> asList(Class<I> clazz) {
         return CommonTransformers.<I>asList();
     }
 
-    public static final <I, O> Function<Iterable<I>, Set<O>> asSet(final Function<? super I, O> func) {
-        return new Function<Iterable<I>, Set<O>>() {
+    public static final <I, O> Function<Iterable<? extends I>, Set<O>> asSet(final Function<? super I, O> func) {
+        return new Function<Iterable<? extends I>, Set<O>>() {
 
-            public Set<O> apply(Iterable<I> input) {
+            public Set<O> apply(Iterable<? extends I> input) {
                 Set<O> output = Sets.newHashSet();
                 for (I value : input) {
                     output.add(func.apply(value));
@@ -113,11 +113,11 @@ public final class CommonTransformers {
         };
     }
 
-    public static final <I> Function<Iterable<I>, Set<I>> asSet() {
+    public static final <I> Function<Iterable<? extends I>, Set<I>> asSet() {
         return asSet(Functions.<I>identity());
     }
 
-    public static final <I> Function<Iterable<I>, Set<I>> asSet(Class<I> clazz) {
+    public static final <I> Function<Iterable<? extends I>, Set<I>> asSet(Class<I> clazz) {
         return CommonTransformers.<I>asSet();
     }
 
@@ -129,7 +129,7 @@ public final class CommonTransformers {
         return new GroupByFunction<I, K, I>(keyFunc, Functions.<I>identity());
     }
 
-    public static class GroupByFunction<I, K, V> implements Function<Iterable<I>, ListMultimap<K, V>> {
+    public static class GroupByFunction<I, K, V> implements Function<Iterable<? extends I>, ListMultimap<K, V>> {
 
         private final Function<? super I, K> keyFunc;
         private final Function<? super I, V> valueFunc;
@@ -139,7 +139,7 @@ public final class CommonTransformers {
             this.valueFunc = valueFunc;
         }
 
-        public ListMultimap<K, V> apply(Iterable<I> input) {
+        public ListMultimap<K, V> apply(Iterable<? extends I> input) {
             ImmutableListMultimap.Builder<K, V> builder = ImmutableListMultimap.builder();
             for (I value : input) {
                 K key = keyFunc.apply(value);
@@ -149,7 +149,7 @@ public final class CommonTransformers {
             return builder.build();
         }
 
-        public <O> Function<Iterable<I>, ListMultimap<K, O>> as(Function<V, O> newValueFunc) {
+        public <O> Function<Iterable<? extends I>, ListMultimap<K, O>> as(Function<V, O> newValueFunc) {
             return new GroupByFunction<I, K, O>(keyFunc, Functions.compose(newValueFunc, valueFunc));
         }
     }
