@@ -168,7 +168,7 @@ public final class CommonTransformers {
         //};
     //}
 
-    public static <T extends Comparable<T>> Function<Range<T>, String> formatRange(final Function<T, String> formatT) {
+    public static <T extends Comparable<T>> Function<Range<T>, String> formatRange(final Function<? super T, String> formatT) {
         return new Function<Range<T>, String>() {
             @Override
             public String apply(Range<T> input) {
