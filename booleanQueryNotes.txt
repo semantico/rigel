@@ -1,0 +1,86 @@
+Solr Boolean behaviour analysis
+==============================
+
+This analysis does not touch on scoring, in a few cases the examples
+with the same boolean behaviour will be scored differently.
+I also assume the default query operator is OR, since things tend to make
+even less sense if its AND.
+
+Lucene
+------
+
+The root query can be purely negative, but any nested queries
+must have a positive clause:
+e.g.
+-a -a               16669
+-a (-a)             0
+
+if I want to search for a OR NOT a then I need to do a sub-query
+
+a OR (*:* NOT a)
+a (*:* -a)
+
+AND OR NOT can be translated into optional, required, prohibited:
+
+a AND b      ----->     +a +b
+a OR  b      ----->     a b
+a NOT b      ----->     a -b
+
+required & prohibited (+ / -) dont play well with AND / OR / NOT.
+they take precedence:
+
+
+a AND +b     ----->     +a +b
+a AND -b     ----->     +a -b
++a AND +b    ----->     +a +b
+-a AND -b    ----->     -a -b
+
+a OR +b      ----->     +b
+a OR -b      ----->     a -b
++a OR -b     ----->     +a -b
++a OR +b     ----->     +a +b
+
+a NOT +b     ----->     !!! invalid syntax
+a NOT -b     ----->     !!! invalid syntax
++a NOT b     ----->     +a -b
+-a NOT b     ----->     -a -b
+
+it appears that AND OR NOT were introduced to make things more simple
+so people wouldnt have to learn how to acheive the same effect using
+the term modifiers:
+
+Optional  : All clauses are optional by default, if the document matches
+            it gets an increased score
+Required  : (+) documents without this term have a score set to 0
+Prohibited: (-) documents with this term have a score set to 0
+
+documents that score 0 are not returned.
+
+grouping with parentheses works as a sub query whose result is a term
+within the surrounding query.
+
+due to the quirk with negative terms in sub queries explained above, 
+a query of the form:
+
+-(-a)
+
+is semantically the same as *:*
+
+
+Edismax
+-------
+
+query               no. of results
+
+*:* NOT a           16669
+a NOT a             0
+a OR NOT -a         0
+a AND +a            514
+a NOT +a            311
+a AND NOT +a        311
+NOT +a              311
+a OR NOT +a         230
+
+most of the above are actually invalid lucene queries,
+but edismax tries to fail gracefully, in doing so,
+it tends to behave in a way you wouldnt expect
