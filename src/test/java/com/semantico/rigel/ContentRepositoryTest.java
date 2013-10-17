@@ -27,6 +27,8 @@ import com.semantico.rigel.test.items.Book;
 import com.semantico.rigel.test.items.Play;
 import com.semantico.rigel.test.items.TestItem;
 
+import static com.semantico.rigel.filters.Filters.*;
+
 @RunWith(JUnit4.class)
 public class ContentRepositoryTest extends IntergrationTestBase {
 
@@ -107,6 +109,22 @@ public class ContentRepositoryTest extends IntergrationTestBase {
             .filter(SCENE_COUNT.equalTo(5))
             .get();
         assertEquals(results.size(), 2);
+    }
+
+    @Test
+    public void testAllQueryFilter2() {
+        List<Play> results = plays.all()
+            .filter(SCENE_COUNT.equalTo(5), SCENE_COUNT.equalTo(6))
+            .get();
+        assertEquals(results.size(), 3);
+    }
+
+    @Test
+    public void testAllQueryFilter3() {
+        List<Play> results = plays.all()
+            .filter(SCENE_COUNT.equalTo(5), require(REALLY_BIG_NUMBER.lessThan(2L)))
+            .get();
+        assertEquals(results.size(), 1);
     }
 
     @Test
@@ -231,6 +249,36 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         assertEquals(2, group.size());
     }
 
+    @Test
+    public void testFilterGroupQuery() {
+        ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT)
+            .limitResultsPerGroup(100)
+            .filter(SCENE_COUNT.atLeast(3))//Filter out scene count = 2
+            .get();
+
+        assertEquals(2, groups.keySet().size());
+    }
+
+    @Test
+    public void testFilterGroupQuery2() {
+        ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT)
+            .limitResultsPerGroup(100)
+            .filter(SCENE_COUNT.atMost(3), SCENE_COUNT.atLeast(6))//Filter out scene count = 5
+            .get();
+
+        assertEquals(2, groups.keySet().size());
+    }
+
+    @Test
+    public void testFilterGroupQuery3() {
+        ListMultimap<String, Play> groups = plays.groupBy(SCENE_COUNT)
+            .limitResultsPerGroup(100)
+            .filter(group(ID.equalTo("play1").or(ID.equalTo("play2"))).and(REALLY_BIG_NUMBER.atMost(2L)))
+            .get();
+
+        assertEquals(1, groups.keySet().size());
+        assertEquals("play2", groups.get("5").get(0).getId());
+    }
     /*
      * Force type means we dont dynamically decide which schema to use
      * when creating the item. it is forced to use the schema provided.
@@ -271,7 +319,9 @@ public class ContentRepositoryTest extends IntergrationTestBase {
     @Test
     public void testJoinQuery() {
         //Get all plays that are in a collection
-        List<Play> results = plays.joinFrom(CHILD_IDS).joinTo(ID).get();
+        List<Play> results = plays.joinFrom(CHILD_IDS)
+            .joinTo(ID)
+            .get();
 
         Collection<String> ids = Collections2.transform(results, playSchema.id);
         assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2", "play4")));
@@ -292,7 +342,6 @@ public class ContentRepositoryTest extends IntergrationTestBase {
 
     @Test
     public void testJoinQueryWithFilter2() {
-        //Get plays that are in a specific collection
         List<Play> results = plays.joinFrom(CHILD_IDS)
             .filter(ID.equalTo("collection1"))
             .joinTo(ID)//do the join
@@ -302,5 +351,31 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         Collection<String> ids = Collections2.transform(results, playSchema.id);
         assertTrue(ids.contains("play2"));
         assertTrue(!ids.contains("play1"));
+    }
+
+    @Test
+    public void testJoinQueryWithFilter3() {
+        List<Play> results = plays.joinFrom(CHILD_IDS)
+            .filter(ID.equalTo("collection1"))
+            .joinTo(ID)//do the join
+            //Test it behaves well with Term list filters (default op is OR)
+            .filter(REALLY_BIG_NUMBER.equalTo(1L), REALLY_BIG_NUMBER.equalTo(1234567L))
+            .get();
+
+        Collection<String> ids = Collections2.transform(results, playSchema.id);
+        assertTrue(ids.containsAll(ImmutableSet.of("play1", "play2")));
+    }
+
+    @Test
+    public void testJoinQueryWithFilter4() {
+        List<Play> results = plays.joinFrom(CHILD_IDS)
+            //Test it behaves well with Term list filters (default op is OR)
+            .filter(ID.equalTo("collection1"), ID.equalTo("collection2"))
+            .joinTo(ID)//do the join
+            .filter(REALLY_BIG_NUMBER.equalTo(1234567L))
+            .get();
+
+        Collection<String> ids = Collections2.transform(results, playSchema.id);
+        assertTrue(ids.containsAll(ImmutableSet.of("play1", "play4")));
     }
 }
