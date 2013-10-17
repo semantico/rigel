@@ -77,6 +77,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             this.q = new SolrQuery(FilterUtils.isEqualTo(schema.id.getField(), id).toSolrFormat());
             q.setRows(1);
             q.setRequestHandler("fetch");
+            setRequiredParams(q);
         }
 
         @Override
@@ -140,6 +141,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             SolrQuery q = new SolrQuery(FilterUtils.or(filters).toSolrFormat());
             q.setRows(Integer.MAX_VALUE);
             q.setRequestHandler("fetch");
+            setRequiredParams(q);
 
             ImmutableList<T> items;
             if (forceType) {
@@ -167,12 +169,19 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         return new AllQueryBuilderImpl();
     }
 
-    protected SolrQuery buildAllQuery() {
+    private SolrQuery buildAllQuery() {
         SolrQuery q = new SolrQuery("*:*");
+        setRequiredParams(q);
         addFiltersToQuery(q, schema.getFilters());
         q.setRows(Integer.MAX_VALUE);
         q.setRequestHandler("fetch");
         return q;
+    }
+
+    //Parameters required for Rigel to behave sensibly
+    private void setRequiredParams(SolrQuery q) {
+        q.set("defType", "lucene");
+        q.set("q.op", "OR");
     }
 
     public ImmutableList<Count> getValuesForField(Field<?> field) {
@@ -258,6 +267,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         @Override
         public ImmutableList<T> get() {
             processQueryHook();
+            setRequiredParams(q);
             if (forceType) {
                 return getContentItemsForQueryForced(q);
             } else {
@@ -337,6 +347,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
                         partOne.toField.getFieldName(),
                         partOne.sourceFilter == null ? "*:*" : partOne.sourceFilter.toSolrFormat()));
             addFiltersToQuery(q, schema.getFilters());
+            setRequiredParams(q);
         }
 
         @Override
@@ -383,6 +394,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             q.set("group", true);
             q.set("group.field", groupField.getFieldName());
             addFiltersToQuery(q, schema.getFilters());
+            setRequiredParams(q);
         }
 
         @Override
