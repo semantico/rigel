@@ -8,13 +8,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.semantico.rigel.fields.Field;
 
-public class EqualsFilter<T> extends Filter {
+public class EqualsTerm<T> extends BasicTerm {
 
     private final Field<T> field;
     private final T value;
     private final Function<? super T, String> toSolrFormatFunc;
 
-    public EqualsFilter(Field<T> field, T value, Function<? super T, String> toSolrFormatFunc) {
+    public EqualsTerm(Field<T> field, T value, Function<? super T, String> toSolrFormatFunc) {
         this.field = field;
         this.value = value;
         this.toSolrFormatFunc = toSolrFormatFunc;

@@ -10,13 +10,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.semantico.rigel.fields.Field;
 
-public class RangeFilter<T extends Comparable<T>> extends Filter {
+public class RangeTerm<T extends Comparable<T>> extends BasicTerm {
 
     private final Field<T> field;
     private final Range<T> range;
     private final Function<? super T, String> valueToSolrFormat;
 
-    public RangeFilter(Field<T> field, Range<T> range, Function<? super T, String> valueToSolrFormat) {
+    public RangeTerm(Field<T> field, Range<T> range, Function<? super T, String> valueToSolrFormat) {
         this.field = field;
         this.range = range;
         this.valueToSolrFormat = valueToSolrFormat;
@@ -43,18 +43,18 @@ public class RangeFilter<T extends Comparable<T>> extends Filter {
     }
 
     public Filter andGreaterThan(T value) {
-        return new RangeFilter<T>(field, Range.greaterThan(value).intersection(range),valueToSolrFormat);
+        return new RangeTerm<T>(field, Range.greaterThan(value).intersection(range),valueToSolrFormat);
     }
 
     public Filter andLessThan(T value) {
-        return new RangeFilter<T>(field, Range.lessThan(value).intersection(range),valueToSolrFormat);
+        return new RangeTerm<T>(field, Range.lessThan(value).intersection(range),valueToSolrFormat);
     }
 
     public Filter andAtLeast(T value) {
-        return new RangeFilter<T>(field, Range.atLeast(value).intersection(range),valueToSolrFormat);
+        return new RangeTerm<T>(field, Range.atLeast(value).intersection(range),valueToSolrFormat);
     }
 
     public Filter andAtMost(T value) {
-        return new RangeFilter<T>(field, Range.atMost(value).intersection(range),valueToSolrFormat);
+        return new RangeTerm<T>(field, Range.atMost(value).intersection(range),valueToSolrFormat);
     }
 }

@@ -7,8 +7,10 @@ import org.apache.solr.common.util.DateUtil;
 import com.google.common.base.Function;
 import com.google.common.collect.Range;
 import com.semantico.rigel.fields.RangeField;
+import com.semantico.rigel.filters.BasicTerm;
 import com.semantico.rigel.filters.Filter;
-import com.semantico.rigel.filters.RangeFilter;
+import com.semantico.rigel.filters.FilterUtils;
+import com.semantico.rigel.filters.RangeTerm;
 
 public class DateField extends RangeField<Date> {
 
@@ -28,32 +30,32 @@ public class DateField extends RangeField<Date> {
      */
 
     @Override
-    public Filter equalTo(Date value) {
-        return Filter.isEqualTo(this, value, DATE_TO_SOLR);
+    public BasicTerm equalTo(Date value) {
+        return FilterUtils.isEqualTo(this, value, DATE_TO_SOLR);
     }
 
     @Override
-    public RangeFilter<Date> greaterThan(Date value) {
-        return Filter.isInRange(this, Range.greaterThan(value), DATE_TO_SOLR);
+    public RangeTerm<Date> greaterThan(Date value) {
+        return FilterUtils.isInRange(this, Range.greaterThan(value), DATE_TO_SOLR);
     }
 
     @Override
-    public RangeFilter<Date> lessThan(Date value) {
-        return Filter.isInRange(this, Range.lessThan(value), DATE_TO_SOLR);
+    public RangeTerm<Date> lessThan(Date value) {
+        return FilterUtils.isInRange(this, Range.lessThan(value), DATE_TO_SOLR);
     }
 
     @Override
-    public RangeFilter<Date> atLeast(Date value) {
-        return Filter.isInRange(this, Range.atLeast(value), DATE_TO_SOLR);
+    public RangeTerm<Date> atLeast(Date value) {
+        return FilterUtils.isInRange(this, Range.atLeast(value), DATE_TO_SOLR);
     }
 
     @Override
-    public RangeFilter<Date> atMost(Date value) {
-        return Filter.isInRange(this, Range.atMost(value), DATE_TO_SOLR);
+    public RangeTerm<Date> atMost(Date value) {
+        return FilterUtils.isInRange(this, Range.atMost(value), DATE_TO_SOLR);
     }
 
     @Override
-    public Filter isInRange(Range<Date> range) {
-        return Filter.isInRange(this, range, DATE_TO_SOLR);
+    public BasicTerm isInRange(Range<Date> range) {
+        return FilterUtils.isInRange(this, range, DATE_TO_SOLR);
     }
 }

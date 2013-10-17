@@ -10,12 +10,12 @@ import com.semantico.rigel.fields.Field;
 
 import static com.google.common.base.Preconditions.*;
 
-public class StartsWithFilter extends Filter {
+public class StartsWithTerm extends BasicTerm {
 
     private final Field<String> field;
     private final String value;
 
-    public StartsWithFilter(Field<String> field, String value) {
+    public StartsWithTerm(Field<String> field, String value) {
         checkNotNull(value);
         checkNotNull(field);
         this.field = field;

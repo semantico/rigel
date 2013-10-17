@@ -2,16 +2,18 @@ package com.semantico.rigel;
 
 import java.util.Collection;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.BooleanExpression;
 import com.semantico.rigel.filters.Filter;
-
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.response.FacetField.Count;
+import com.semantico.rigel.filters.Term;
 
 /**
  * yeah its an interface.
@@ -36,7 +38,8 @@ public interface ContentRepository<T extends ContentItem> {
 
     public interface AllQueryBuilder<T> {
 
-        AllQueryBuilder<T> filter(Filter... filters);
+        AllQueryBuilder<T> filter(BooleanExpression filter);
+        AllQueryBuilder<T> filter(Term... terms);
         AllQueryBuilder<T> orderBy(Field<?> field, ORDER order);
         AllQueryBuilder<T> limit(int count);
         AllQueryBuilder<T> customQuery(QueryHook hook);
@@ -58,13 +61,15 @@ public interface ContentRepository<T extends ContentItem> {
 
     public interface FieldQueryBuilder<T> {
 
-        FieldQueryBuilder<T> filter(Filter... filters);
+        FieldQueryBuilder<T> filter(BooleanExpression filter);
+        FieldQueryBuilder<T> filter(Term... terms);
         ImmutableList<Count> get();
     }
 
     public interface GroupQueryBuilder<T> {
 
-        GroupQueryBuilder<T> filter(Filter... filters);
+        GroupQueryBuilder<T> filter(BooleanExpression filter);
+        GroupQueryBuilder<T> filter(Term... terms);
         GroupQueryBuilder<T> orderGroupsBy(Field<?> field, ORDER order);
         GroupQueryBuilder<T> limitGroups(int count);
         GroupQueryBuilder<T> orderWithinGroupBy(Field<?> field, ORDER order);
@@ -85,7 +90,8 @@ public interface ContentRepository<T extends ContentItem> {
             /**
              * Filter the source (from)
              */
-            PartOne<T> filter(Filter... filters);
+            PartOne<T> filter(BooleanExpression filter);
+            PartOne<T> filter(Term... terms);
 
             PartTwo<T> joinTo(Field<?> field);
         }
@@ -95,7 +101,9 @@ public interface ContentRepository<T extends ContentItem> {
             /**
              * Filter the join results
              */
-            PartTwo<T> filter(Filter... filters);
+            PartTwo<T> filter(BooleanExpression filter);
+            PartTwo<T> filter(Term... terms);
+
             PartTwo<T> forceType();
 
             ImmutableList<T> get();

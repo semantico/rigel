@@ -15,7 +15,11 @@ import com.google.common.collect.Sets;
 import com.semantico.rigel.ContentRepository.JoinQueryBuilder.PartOne;
 import com.semantico.rigel.ContentRepository.JoinQueryBuilder.PartTwo;
 import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.filters.BooleanExpression;
 import com.semantico.rigel.filters.Filter;
+import com.semantico.rigel.filters.FilterUtils;
+import com.semantico.rigel.filters.Filters;
+import com.semantico.rigel.filters.Term;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,7 +74,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
         public IdQueryBuilderImpl(String id) {
             this.forceType = false;
-            this.q = new SolrQuery(Filter.isEqualTo(schema.id.getField(), id).toSolrFormat());
+            this.q = new SolrQuery(FilterUtils.isEqualTo(schema.id.getField(), id).toSolrFormat());
             q.setRows(1);
             q.setRequestHandler("fetch");
         }
@@ -131,9 +135,9 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
             Set<Filter> filters = Sets.newHashSet();
             for (String id : ids) {
-                filters.add(Filter.isEqualTo(schema.id.getField(), id));
+                filters.add(FilterUtils.isEqualTo(schema.id.getField(), id));
             }
-            SolrQuery q = new SolrQuery(Filter.or(filters).toSolrFormat());
+            SolrQuery q = new SolrQuery(FilterUtils.or(filters).toSolrFormat());
             q.setRows(Integer.MAX_VALUE);
             q.setRequestHandler("fetch");
 
@@ -165,7 +169,7 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
 
     protected SolrQuery buildAllQuery() {
         SolrQuery q = new SolrQuery("*:*");
-        q.addFilterQuery(Filter.and(schema.getFilters()).toSolrFormat());
+        addFiltersToQuery(q, schema.getFilters());
         q.setRows(Integer.MAX_VALUE);
         q.setRequestHandler("fetch");
         return q;
@@ -216,8 +220,14 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public AllQueryBuilder<T> filter(Filter... filters) {
-            q.addFilterQuery(Filter.and(filters).toSolrFormat());
+        public AllQueryBuilder<T> filter(BooleanExpression filter) {
+            q.addFilterQuery(filter.toSolrFormat());
+            return this;
+        }
+
+        @Override
+        public AllQueryBuilder<T> filter(Term... terms) {
+            q.addFilterQuery(FilterUtils.joinTerms(terms).toSolrFormat());
             return this;
         }
 
@@ -288,13 +298,23 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         }
 
         @Override
-        public PartOne<T> filter(Filter... filters) {
-            if (sourceFilter != null) {
-                this.sourceFilter = Filter.and(Lists.asList(sourceFilter, filters));
-            } else {
-                this.sourceFilter = Filter.and(filters);
-            }
+        public PartOne<T> filter(BooleanExpression expression) {
+            filter(expression);
             return this;
+        }
+
+        @Override
+        public PartOne<T> filter(Term... terms) {
+            filter(FilterUtils.joinTerms(terms));
+            return this;
+        }
+
+        private void filter(Filter filter) {
+            if (sourceFilter != null) {
+                this.sourceFilter = Filters.group(sourceFilter).and(Filters.group(filter));
+            } else {
+                this.sourceFilter = filter;
+            }
         }
 
         @Override
@@ -316,12 +336,18 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
                         partOne.fromField.getFieldName(),
                         partOne.toField.getFieldName(),
                         partOne.sourceFilter == null ? "*:*" : partOne.sourceFilter.toSolrFormat()));
-            q.addFilterQuery(Filter.and(schema.getFilters()).toSolrFormat());
+            addFiltersToQuery(q, schema.getFilters());
         }
 
         @Override
-        public PartTwo<T> filter(Filter... filters) {
-            q.addFilterQuery(Filter.and(filters).toSolrFormat());
+        public PartTwo<T> filter(BooleanExpression expr) {
+            q.addFilterQuery(expr.toSolrFormat());
+            return this;
+        }
+
+        @Override
+        public PartTwo<T> filter(Term... terms) {
+            q.addFilterQuery(FilterUtils.joinTerms(terms).toSolrFormat());
             return this;
         }
 
@@ -356,12 +382,18 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
             this.q = new SolrQuery("*:*");
             q.set("group", true);
             q.set("group.field", groupField.getFieldName());
-            q.addFilterQuery(Filter.and(schema.getFilters()).toSolrFormat());
+            addFiltersToQuery(q, schema.getFilters());
         }
 
         @Override
-        public GroupQueryBuilder<T> filter(Filter... filters) {
-            q.addFilterQuery(Filter.and(filters).toSolrFormat());
+        public GroupQueryBuilder<T> filter(BooleanExpression expr) {
+            q.addFilterQuery(expr.toSolrFormat());
+            return this;
+        }
+
+        @Override
+        public GroupQueryBuilder<T> filter(Term... terms) {
+            q.addFilterQuery(FilterUtils.joinTerms(terms).toSolrFormat());
             return this;
         }
 
@@ -421,6 +453,15 @@ public final class ContentRepositoryImpl<T extends ContentItem> implements
         //// TODO IMPLEMENT ME
         //return null;
     //}
+
+    /*
+     * Helper methods
+     */
+    private void addFiltersToQuery(SolrQuery q, Iterable<Filter> filters) {
+        for (Filter filter : filters) {
+            q.addFilterQuery(filter.toSolrFormat());
+        }
+    }
 
     private ImmutableList<T> getContentItemsForQueryForced(SolrQuery q) {
         QueryResponse response = querySolr(q);

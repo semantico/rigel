@@ -1,7 +1,8 @@
 package com.semantico.rigel.fields.types;
 
 import com.semantico.rigel.fields.RangeField;
-import com.semantico.rigel.filters.Filter;
+import com.semantico.rigel.filters.BasicTerm;
+import com.semantico.rigel.filters.FilterUtils;
 
 public class StringField extends RangeField<String> {
 
@@ -13,7 +14,7 @@ public class StringField extends RangeField<String> {
      * Literate Filter methods
      */
 
-    public Filter startsWith(String value) {
-        return Filter.startsWith(this, value);
+    public BasicTerm startsWith(String value) {
+        return FilterUtils.startsWith(this, value);
     }
 }

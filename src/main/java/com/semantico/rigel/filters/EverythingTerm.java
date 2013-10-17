@@ -7,7 +7,7 @@ import org.apache.solr.common.SolrDocument;
 import com.google.common.collect.ImmutableSet;
 import com.semantico.rigel.fields.Field;
 
-public class EverythingFilter extends Filter {
+public class EverythingTerm extends BasicTerm {
 
     @Override
     public boolean apply(SolrDocument input) {

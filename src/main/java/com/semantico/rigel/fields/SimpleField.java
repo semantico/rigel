@@ -2,15 +2,14 @@ package com.semantico.rigel.fields;
 
 import java.util.Collection;
 
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ClassToInstanceMap;
 import com.semantico.rigel.FieldDataSource;
 import com.semantico.rigel.RigelContext;
 import com.semantico.rigel.SolrDocDataSource;
-import com.semantico.rigel.filters.Filter;
+import com.semantico.rigel.filters.BasicTerm;
+import com.semantico.rigel.filters.FilterUtils;
 
 /*
  * well... it started simple
@@ -53,8 +52,8 @@ public abstract class SimpleField<T> implements Field<T>, MultivaluedFieldAdapta
     /*
      * Literate Filter methods
      */
-    public Filter equalTo(T value) {
-        return Filter.isEqualTo(this, value);
+    public BasicTerm equalTo(T value) {
+        return FilterUtils.isEqualTo(this, value);
     }
 
 }

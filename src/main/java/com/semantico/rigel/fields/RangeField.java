@@ -2,7 +2,8 @@ package com.semantico.rigel.fields;
 
 import com.google.common.collect.Range;
 import com.semantico.rigel.filters.Filter;
-import com.semantico.rigel.filters.RangeFilter;
+import com.semantico.rigel.filters.FilterUtils;
+import com.semantico.rigel.filters.RangeTerm;
 
 public class RangeField<T extends Comparable<T>> extends SimpleField<T> {
 
@@ -10,23 +11,23 @@ public class RangeField<T extends Comparable<T>> extends SimpleField<T> {
         super(fieldName);
     }
 
-    public RangeFilter<T> greaterThan(T value) {
-        return Filter.isInRange(this, Range.greaterThan(value));
+    public RangeTerm<T> greaterThan(T value) {
+        return FilterUtils.isInRange(this, Range.greaterThan(value));
     }
 
-    public RangeFilter<T> lessThan(T value) {
-        return Filter.isInRange(this, Range.lessThan(value));
+    public RangeTerm<T> lessThan(T value) {
+        return FilterUtils.isInRange(this, Range.lessThan(value));
     }
 
-    public RangeFilter<T> atLeast(T value) {
-        return Filter.isInRange(this, Range.atLeast(value));
+    public RangeTerm<T> atLeast(T value) {
+        return FilterUtils.isInRange(this, Range.atLeast(value));
     }
 
-    public RangeFilter<T> atMost(T value) {
-        return Filter.isInRange(this, Range.atMost(value));
+    public RangeTerm<T> atMost(T value) {
+        return FilterUtils.isInRange(this, Range.atMost(value));
     }
 
     public Filter isInRange(Range<T> range) {
-        return Filter.isInRange(this, range);
+        return FilterUtils.isInRange(this, range);
     }
 }

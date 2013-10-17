@@ -8,9 +8,11 @@ import org.junit.runners.JUnit4;
 
 import com.google.common.collect.Range;
 import com.semantico.rigel.fields.types.*;
+import com.semantico.rigel.filters.BooleanExpression.AmbiguousExpressionException;
 import com.semantico.rigel.filters.Filter;
 
 import static org.junit.Assert.*;
+import static com.semantico.rigel.filters.Filters.*;
 
 @RunWith(JUnit4.class)
 public class FilterTest {
@@ -91,7 +93,7 @@ public class FilterTest {
     public void testAndFilter() {
         Filter filter;
 
-        filter = COUNT.atLeast(10).and(TYPE.startsWith("easy")).group();
+        filter = group(COUNT.atLeast(10).and(TYPE.startsWith("easy")));
         assertEquals("(count:[10 TO *] AND type:easy*)", filter.toSolrFormat());
 
         filter = COUNT.equalTo(6).and(TYPE.equalTo("void").and(NAME.equalTo("shiz")));
@@ -102,20 +104,34 @@ public class FilterTest {
     public void testOrFilter() {
         Filter filter;
 
-        filter = COUNT.atLeast(10).or(TYPE.startsWith("easy")).group();
+        filter = group(COUNT.atLeast(10).or(TYPE.startsWith("easy")));
         assertEquals("(count:[10 TO *] OR type:easy*)", filter.toSolrFormat());
 
         filter = COUNT.equalTo(6).or(TYPE.equalTo("void").or(NAME.equalTo("shiz")));
         assertEquals("count:6 OR type:void OR name:shiz", filter.toSolrFormat());
     }
 
-    @Test
-    public void testAssocitivity() {
-        //When an expresssion is Ambigious we assume left-associativity
-        //the precedence of AND and OR in solr is actually not well defined
-        Filter filter;
+    /*
+    *the precedence of AND and OR in solr is actually not well defined
+    */
+    @Test(expected = AmbiguousExpressionException.class)
+    public void testAmbiguousExpression() {
+        COUNT.equalTo(5).and(TYPE.equalTo("void").or(COUNT.equalTo(10)));
+    }
 
-        filter = COUNT.equalTo(5).and(TYPE.equalTo("void")).or(COUNT.equalTo(10));
-        assertEquals("(count:5 AND type:void) OR count:10", filter.toSolrFormat());
+    @Test(expected = AmbiguousExpressionException.class)
+    public void testAmbiguousExpression2() {
+        COUNT.equalTo(5).and(TYPE.equalTo("void")).or(COUNT.equalTo(10));
+    }
+
+    //Test again with or preceding the and
+    @Test(expected = AmbiguousExpressionException.class)
+    public void testAmbiguousExpression3() {
+        COUNT.equalTo(5).or(TYPE.equalTo("void")).and(COUNT.equalTo(10));
+    }
+
+    @Test(expected = AmbiguousExpressionException.class)
+    public void testAmbiguousExpression4() {
+        COUNT.equalTo(5).or(TYPE.equalTo("void").and(COUNT.equalTo(10)));
     }
 }
