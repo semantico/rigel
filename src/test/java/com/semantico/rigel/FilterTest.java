@@ -111,6 +111,33 @@ public class FilterTest {
         assertEquals("count:6 OR type:void OR name:shiz", filter.toSolrFormat());
     }
 
+    @Test
+    public void testRequired() {
+        Filter filter;
+
+        filter = require(COUNT.equalTo(5));
+        assertEquals("+count:5", filter.toSolrFormat());
+
+        filter = require(group(COUNT.equalTo(5).or(COUNT.equalTo(7))));
+        assertEquals("+(count:5 OR count:7)", filter.toSolrFormat());
+
+        //The following dosen't compile. Good. thats intentional
+        //require(COUNT.greaterThan(2).and(NAME.equalTo("edd")));
+    }
+
+    @Test
+    public void testProhibited() {
+        Filter filter;
+
+        filter = prohibit(COUNT.equalTo(5));
+        assertEquals("-count:5", filter.toSolrFormat());
+
+        filter = prohibit(group(COUNT.equalTo(5).or(COUNT.equalTo(7))));
+        assertEquals("-(count:5 OR count:7)", filter.toSolrFormat());
+
+        //The following dosen't compile. Good. thats intentional
+        //prohibit(COUNT.greaterThan(2).and(NAME.equalTo("edd")));
+    }
     /*
     *the precedence of AND and OR in solr is actually not well defined
     */
