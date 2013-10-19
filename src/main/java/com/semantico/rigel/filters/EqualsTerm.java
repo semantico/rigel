@@ -7,22 +7,22 @@ import org.apache.solr.common.SolrDocument;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.semantico.rigel.fields.Field;
+import com.semantico.rigel.fields.MultivaluedFieldAdaptable;
+import com.semantico.rigel.fields.MultivaluedFieldAdaptor;
 
-public class EqualsTerm<T> extends BasicTerm {
+public class EqualsTerm<T> extends FieldBasedTerm<T> {
 
-    private final Field<T> field;
     private final T value;
     private final Function<? super T, String> toSolrFormatFunc;
 
     public EqualsTerm(Field<T> field, T value, Function<? super T, String> toSolrFormatFunc) {
-        this.field = field;
+        super(field);
         this.value = value;
         this.toSolrFormatFunc = toSolrFormatFunc;
     }
 
     @Override
-    public boolean apply(SolrDocument input) {
-        T actual = getFieldValue(field, input);
+    protected boolean decide(T actual) {
         return value.equals(actual);
     }
 

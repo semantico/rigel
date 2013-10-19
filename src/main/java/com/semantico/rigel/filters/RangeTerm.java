@@ -2,7 +2,6 @@ package com.semantico.rigel.filters;
 
 import java.util.Set;
 
-import org.apache.solr.common.SolrDocument;
 
 import com.google.common.base.Function;
 import com.google.common.collect.BoundType;
@@ -10,21 +9,19 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.semantico.rigel.fields.Field;
 
-public class RangeTerm<T extends Comparable<T>> extends BasicTerm {
+public class RangeTerm<T extends Comparable<T>> extends FieldBasedTerm<T> {
 
-    private final Field<T> field;
     private final Range<T> range;
     private final Function<? super T, String> valueToSolrFormat;
 
     public RangeTerm(Field<T> field, Range<T> range, Function<? super T, String> valueToSolrFormat) {
-        this.field = field;
+        super(field);
         this.range = range;
         this.valueToSolrFormat = valueToSolrFormat;
     }
 
     @Override
-    public boolean apply(SolrDocument input) {
-        T actual = getFieldValue(field, input);
+    public boolean decide(T actual) {
         return actual != null && range.contains(actual);
     }
 

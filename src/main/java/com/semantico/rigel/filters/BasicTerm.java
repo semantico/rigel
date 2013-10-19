@@ -1,11 +1,5 @@
 package com.semantico.rigel.filters;
 
-import org.apache.solr.common.SolrDocument;
-
-import com.google.common.collect.ImmutableClassToInstanceMap;
-import com.semantico.rigel.FieldDataSource;
-import com.semantico.rigel.SolrDocDataSource;
-import com.semantico.rigel.fields.Field;
 import com.semantico.rigel.filters.BooleanExpression.AmbiguousExpressionException;
 
 /*
@@ -13,15 +7,6 @@ import com.semantico.rigel.filters.BooleanExpression.AmbiguousExpressionExceptio
  * modified terms can only be used in a term list
  */
 public abstract class BasicTerm implements Term {
-
-    /**
-     * Helper method to wrap the solr doc up in a context & get the value using the field
-     */
-    protected <T> T getFieldValue(Field<T> field, SolrDocument doc) {
-        ImmutableClassToInstanceMap.Builder<FieldDataSource<?>> context = ImmutableClassToInstanceMap.builder();
-        context.put(SolrDocDataSource.class, new SolrDocDataSource(doc));
-        return field.getValue(context.build());
-    }
 
     @Override
     public boolean isOptional() {

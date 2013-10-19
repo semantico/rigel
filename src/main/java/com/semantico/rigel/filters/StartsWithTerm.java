@@ -10,21 +10,18 @@ import com.semantico.rigel.fields.Field;
 
 import static com.google.common.base.Preconditions.*;
 
-public class StartsWithTerm extends BasicTerm {
+public class StartsWithTerm extends FieldBasedTerm<String> {
 
-    private final Field<String> field;
     private final String value;
 
     public StartsWithTerm(Field<String> field, String value) {
+        super(field);
         checkNotNull(value);
-        checkNotNull(field);
-        this.field = field;
         this.value = value;
     }
 
     @Override
-    public boolean apply(SolrDocument input) {
-        String actual = getFieldValue(field, input);
+    public boolean decide(String actual) {
         if (actual == null) {
             return false;
         }
