@@ -665,7 +665,7 @@
     <field name="dc_subject_facet" type="string" indexed="true" stored="true" multiValued="true" />
 
     <!-- dc_title: the title (short formal name) of this item of content -->
-   <field name="dc_title" type="xml" indexed="true" stored="true" multiValued="false" />
+   <field name="dc_title" type="string" indexed="true" stored="true" multiValued="false" />
    <field name="dc_title_sortable" type="titleSort" indexed="true" stored="true" multiValued="false" />
    <field name="dc_title_firstLetter" type="firstLetter" indexed="true" stored="true" multiValued="false" />
 
