@@ -17,6 +17,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Optional;
 
+import static com.google.common.base.Preconditions.*;
+
 public final class CommonTransformers {
 
     /*
@@ -24,6 +26,7 @@ public final class CommonTransformers {
      */
 
     public static final <T> Function<T, T> defaultValue(final T value) {
+        checkNotNull(value);
         return new Function<T, T>() {
 
             public T apply(T input) {
@@ -33,6 +36,7 @@ public final class CommonTransformers {
     }
 
     public static final <I, O> Function<I, O> mapValues(final ImmutableMap<I,O> map) {
+        checkNotNull(map);
         return new Function<I, O>() {
 
             public O apply(I input) {
@@ -59,6 +63,7 @@ public final class CommonTransformers {
      */
 
     public static final <I, O> Function<Iterable<? extends I>, Collection<O>> asCollection(final Function<? super I, O> func) {
+        checkNotNull(func);
         return new Function<Iterable<? extends I>, Collection<O>>() {
 
             public Collection<O> apply(Iterable<? extends I> input) {
@@ -80,6 +85,7 @@ public final class CommonTransformers {
     }
 
     public static final <I, O> Function<Iterable<? extends I>, List<O>> asList(final Function<? super I, O> func) {
+        checkNotNull(func);
         return new Function<Iterable<? extends I>, List<O>>() {
 
             public List<O> apply(Iterable<? extends I> input) {
@@ -101,6 +107,7 @@ public final class CommonTransformers {
     }
 
     public static final <I, O> Function<Iterable<? extends I>, Set<O>> asSet(final Function<? super I, O> func) {
+        checkNotNull(func);
         return new Function<Iterable<? extends I>, Set<O>>() {
 
             public Set<O> apply(Iterable<? extends I> input) {
@@ -126,6 +133,7 @@ public final class CommonTransformers {
      */
 
     public static final <I, K> GroupByFunction<I, K, I> groupBy(Function<I, K> keyFunc) {
+        checkNotNull(keyFunc);
         return new GroupByFunction<I, K, I>(keyFunc, Functions.<I>identity());
     }
 
@@ -150,6 +158,7 @@ public final class CommonTransformers {
         }
 
         public <O> Function<Iterable<? extends I>, ListMultimap<K, O>> as(Function<V, O> newValueFunc) {
+            checkNotNull(newValueFunc);
             return new GroupByFunction<I, K, O>(keyFunc, Functions.compose(newValueFunc, valueFunc));
         }
     }
@@ -169,6 +178,7 @@ public final class CommonTransformers {
     //}
 
     public static <T extends Comparable<T>> Function<Range<T>, String> formatRange(final Function<? super T, String> formatT) {
+        checkNotNull(formatT);
         return new Function<Range<T>, String>() {
             @Override
             public String apply(Range<T> input) {
@@ -180,6 +190,7 @@ public final class CommonTransformers {
     }
 
     public static Function<Date, String> formatDate(String formatString) {
+        checkNotNull(formatString);
         final SimpleDateFormat format = new SimpleDateFormat(formatString);
         return new Function<Date, String>() {
             @Override
