@@ -10,6 +10,8 @@ import com.semantico.rigel.fields.Field;
 import com.semantico.rigel.fields.MultivaluedFieldAdaptable;
 import com.semantico.rigel.fields.MultivaluedFieldAdaptor;
 
+import static com.google.common.base.Preconditions.*;
+
 public class EqualsTerm<T> extends FieldBasedTerm<T> {
 
     private final T value;
@@ -17,6 +19,7 @@ public class EqualsTerm<T> extends FieldBasedTerm<T> {
 
     public EqualsTerm(Field<T> field, T value, Function<? super T, String> toSolrFormatFunc) {
         super(field);
+        checkNotNull(value);
         this.value = value;
         this.toSolrFormatFunc = toSolrFormatFunc;
     }

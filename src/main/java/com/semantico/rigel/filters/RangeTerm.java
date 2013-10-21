@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.semantico.rigel.fields.Field;
 
+import static com.google.common.base.Preconditions.*;
+
 public class RangeTerm<T extends Comparable<T>> extends FieldBasedTerm<T> {
 
     private final Range<T> range;
@@ -16,6 +18,8 @@ public class RangeTerm<T extends Comparable<T>> extends FieldBasedTerm<T> {
 
     public RangeTerm(Field<T> field, Range<T> range, Function<? super T, String> valueToSolrFormat) {
         super(field);
+        checkNotNull(range);
+        checkNotNull(valueToSolrFormat);
         this.range = range;
         this.valueToSolrFormat = valueToSolrFormat;
     }

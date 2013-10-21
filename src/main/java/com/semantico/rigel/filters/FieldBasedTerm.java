@@ -11,11 +11,14 @@ import com.semantico.rigel.fields.Field;
 import com.semantico.rigel.fields.MultivaluedFieldAdaptable;
 import com.semantico.rigel.fields.MultivaluedFieldAdaptor;
 
+import static com.google.common.base.Preconditions.*;
+
 public abstract class FieldBasedTerm<T> extends BasicTerm {
 
     protected final Field<T> field;
 
     public FieldBasedTerm(Field<T> field) {
+        checkNotNull(field);
         this.field = field;
     }
 

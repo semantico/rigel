@@ -21,6 +21,9 @@ public class Or extends BooleanExpression {
 
     Or(Iterable<? extends Filter> filters) {//Deliberately Package-Private
         checkArgument(Iterables.size(filters) > 0, "OR must have at least one clause");
+        for (Filter filter : filters) {
+            checkNotNull(filter);
+        }
         this.filters = filters;
     }
 

@@ -6,10 +6,13 @@ import org.apache.solr.common.SolrDocument;
 
 import com.semantico.rigel.fields.Field;
 
+import static com.google.common.base.Preconditions.*;
+
 public class ProhibitedTerm extends ModifiedTerm {
 
     public ProhibitedTerm(BasicTerm modifiedTerm) {
         super(modifiedTerm);
+        checkNotNull(modifiedTerm);
     }
 
     @Override

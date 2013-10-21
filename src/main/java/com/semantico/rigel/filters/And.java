@@ -1,6 +1,6 @@
 package com.semantico.rigel.filters;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.Arrays;
 
@@ -21,6 +21,9 @@ public class And extends BooleanExpression {
 
     And(Iterable<? extends Filter> filters) {//Deliberately Package-Private
         checkArgument(Iterables.size(filters) > 0, "AND must have at least one clause");
+        for (Filter filter : filters) {
+            checkNotNull(filter);
+        }
         this.filters = filters;
     }
 

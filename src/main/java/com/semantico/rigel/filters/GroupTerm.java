@@ -5,12 +5,14 @@ import java.util.Set;
 import org.apache.solr.common.SolrDocument;
 
 import com.semantico.rigel.fields.Field;
+import static com.google.common.base.Preconditions.*;
 
 public class GroupTerm extends BasicTerm {
 
     public Filter filter;
 
     public GroupTerm(Filter filter) {
+        checkNotNull(filter);
         this.filter = filter;
     }
 
