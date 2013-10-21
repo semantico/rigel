@@ -43,19 +43,19 @@ public class RangeTerm<T extends Comparable<T>> extends FieldBasedTerm<T> {
         return ImmutableSet.<Field<?>>of(field);
     }
 
-    public Filter andGreaterThan(T value) {
+    public BasicTerm andGreaterThan(T value) {
         return new RangeTerm<T>(field, Range.greaterThan(value).intersection(range),valueToSolrFormat);
     }
 
-    public Filter andLessThan(T value) {
+    public BasicTerm andLessThan(T value) {
         return new RangeTerm<T>(field, Range.lessThan(value).intersection(range),valueToSolrFormat);
     }
 
-    public Filter andAtLeast(T value) {
+    public BasicTerm andAtLeast(T value) {
         return new RangeTerm<T>(field, Range.atLeast(value).intersection(range),valueToSolrFormat);
     }
 
-    public Filter andAtMost(T value) {
+    public BasicTerm andAtMost(T value) {
         return new RangeTerm<T>(field, Range.atMost(value).intersection(range),valueToSolrFormat);
     }
 }
