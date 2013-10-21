@@ -67,6 +67,16 @@ public abstract class IntergrationTestBase {
             .build();
     }
 
+    protected static void shutDown() {
+        try {
+            server.deleteByQuery("*:*");
+        } catch (SolrServerException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        server.shutdown();
+    }
+
     protected static SolrInputDocument createPlay(String id, String title, String author, Date date, int sceneCount, long bigNum) {
         SolrInputDocument doc = new SolrInputDocument();
         doc.addField(playSchema.type.getField().getFieldName(), "play");

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrInputDocument;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,6 +88,11 @@ public class ContentRepositoryTest extends IntergrationTestBase {
         plays = rigel.getContentRepository(playSchema);
         books = rigel.getContentRepository(bookSchema);
         items = rigel.getContentRepository(testItemSchema);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        shutDown();
     }
 
     @Test
