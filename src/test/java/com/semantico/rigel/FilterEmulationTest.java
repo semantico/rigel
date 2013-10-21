@@ -136,4 +136,14 @@ public class FilterEmulationTest extends IntergrationTestBase {
     public void testOr() {
         testFilter(group(SCENE_COUNT.equalTo(5).or(SCENE_COUNT.equalTo(6))));
     }
+
+    @Test
+    public void testGroupBoolean() {
+        testFilter(group(group(SCENE_COUNT.equalTo(5).and(AUTHOR.startsWith("K"))).or(SCENE_COUNT.equalTo(2))));
+    }
+
+    @Test
+    public void testTermList() {
+        testFilter(group(require(SCENE_COUNT.equalTo(5)), prohibit(REALLY_BIG_NUMBER.equalTo(1L))));
+    }
 }
