@@ -30,6 +30,9 @@ public abstract class FieldBasedTerm<T> extends BasicTerm {
     public boolean apply(SolrDocument doc) {
         if (field instanceof MultivaluedFieldAdaptable) {
             Collection<T> actuals = getFieldValue(new MultivaluedFieldAdaptor<T>((MultivaluedFieldAdaptable<T>)field), doc);
+            if (actuals == null) {
+                return false;
+            }
             for (T actual : actuals) {
                 if (decide(actual)) {
                     return true;
@@ -38,6 +41,9 @@ public abstract class FieldBasedTerm<T> extends BasicTerm {
             return false;
         } else {
             T actual = getFieldValue(field, doc);
+            if (actual == null) {
+                return false;
+            }
             return decide(actual);
         }
     }
