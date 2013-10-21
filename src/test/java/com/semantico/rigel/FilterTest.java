@@ -89,6 +89,16 @@ public class FilterTest {
         COUNT.atLeast(100).andAtMost(99);//Disjoint
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalRange3() {
+        COUNT.greaterThan(5).andLessThan(3);//Disjoint
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalRange4() {
+        COUNT.atMost(99).andAtLeast(100);//Disjoint
+    }
+
     @Test
     public void testAndFilter() {
         Filter filter;
