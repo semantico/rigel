@@ -53,33 +53,15 @@ public class And extends BooleanExpression {
      * (and / or / not) unless you use group them
      * using parentheses
      *
-     * these methods fail fast when you try to create an
-     * ambiguous expression.
-     *
      * The constructors for And & Or are package-private
      * to prevent these checks from being circumvented
      */
 
-    @Override
-    public BooleanExpression or(BasicTerm term) {
-        throw new AmbiguousExpressionException(new Or(this, term));
-    }
-
-    @Override
-    public BooleanExpression or(BooleanExpression expr) {
-        throw new AmbiguousExpressionException(new Or(this, expr));
-    }
-
-    @Override
-    public BooleanExpression and(BasicTerm term) {
+    public And and(BasicTerm term) {
         return new And(this, term);
     }
 
-    @Override
-    public BooleanExpression and(BooleanExpression expr) {
-        if (expr instanceof Or) {
-            throw new AmbiguousExpressionException(new And(this, expr));
-        }
+    public And and(And expr) {
         return new And(this, expr);
     }
 }

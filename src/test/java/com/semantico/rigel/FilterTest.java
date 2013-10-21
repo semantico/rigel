@@ -138,27 +138,4 @@ public class FilterTest {
         //The following dosen't compile. Good. thats intentional
         //prohibit(COUNT.greaterThan(2).and(NAME.equalTo("edd")));
     }
-    /*
-    *the precedence of AND and OR in solr is actually not well defined
-    */
-    @Test(expected = AmbiguousExpressionException.class)
-    public void testAmbiguousExpression() {
-        COUNT.equalTo(5).and(TYPE.equalTo("void").or(COUNT.equalTo(10)));
-    }
-
-    @Test(expected = AmbiguousExpressionException.class)
-    public void testAmbiguousExpression2() {
-        COUNT.equalTo(5).and(TYPE.equalTo("void")).or(COUNT.equalTo(10));
-    }
-
-    //Test again with or preceding the and
-    @Test(expected = AmbiguousExpressionException.class)
-    public void testAmbiguousExpression3() {
-        COUNT.equalTo(5).or(TYPE.equalTo("void")).and(COUNT.equalTo(10));
-    }
-
-    @Test(expected = AmbiguousExpressionException.class)
-    public void testAmbiguousExpression4() {
-        COUNT.equalTo(5).or(TYPE.equalTo("void").and(COUNT.equalTo(10)));
-    }
 }

@@ -42,29 +42,4 @@ public abstract class BooleanExpression implements Filter {
                 attemptedExpr.toSolrFormat()));
         }
     }
-
-    /*
-     * Fluent Boolean methods
-     *
-     * The concrete classes combine filters, but
-     * the fluent api restricts this to Basic terms
-     * and boolean expressions. This prevents you
-     * from mixing (prohibited / required) with
-     * (and / or / not) unless you use group them
-     * using parentheses
-     *
-     * these methods fail fast when you try to create an
-     * ambiguous expression.
-     *
-     * The constructors for And & Or are package-private
-     * to prevent these checks from being circumvented
-     */
-
-    public abstract BooleanExpression and(BasicTerm term);
-
-    public abstract BooleanExpression and(BooleanExpression expr);
-
-    public abstract BooleanExpression or(BasicTerm term);
-
-    public abstract BooleanExpression or(BooleanExpression expr);
 }
